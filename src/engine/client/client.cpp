@@ -208,7 +208,7 @@ int CClient::SendMsgActive(CMsgPacker *pMsg, int Flags)
 void CClient::SendRClientInfo(int Conn)
 {
 	CMsgPacker Msg(NETMSG_IAMRUSHIE, true);
-	Msg.AddString(RCLIENT_VERSION " built on " __DATE__ ", " __TIME__);
+	Msg.AddString("rushieclient v" RCLIENT_VERSION " built on " __DATE__ ", " __TIME__);
 	SendMsg(Conn, &Msg, MSGFLAG_VITAL);
 }
 
@@ -1841,35 +1841,6 @@ void CClient::ProcessServerPacket(CNetChunk *pPacket, int Conn, bool Dummy)
 				MsgP.AddInt(ResultCheck);
 				SendMsg(Conn, &MsgP, MSGFLAG_VITAL);
 			}
-		}
-		else if(Msg == NETMSG_RUSHIE_CHECKSUM_REQUEST)
-		{
-#ifndef RUSHIE_CHECKSUM_SALT
-// salt@rushieclient.github.io: c1a9a681-3a20-4a4b-9e89-27733e89b23c
-#define RUSHIE_CHECKSUM_SALT \
-	{ \
-		{ \
-			0xc1, 0xa9, 0xa6, 0x81, 0x3a, 0x20, 0x4a, 0x4b, \
-				0x9e, 0x89, 0x27, 0x73, 0x3e, 0x89, 0xb2, 0x3c, \
-		} \
-	}
-#endif
-			CUuid *pUuid = (CUuid *)Unpacker.GetRaw(sizeof(*pUuid));
-			if(Unpacker.Error())
-			{
-				return;
-			}
-			SHA256_CTX Sha256Ctxt;
-			sha256_init(&Sha256Ctxt);
-			CUuid Salt = RUSHIE_CHECKSUM_SALT;
-			sha256_update(&Sha256Ctxt, &Salt, sizeof(Salt));
-			sha256_update(&Sha256Ctxt, pUuid, sizeof(*pUuid));
-			SHA256_DIGEST Sha256 = sha256_finish(&Sha256Ctxt);
-
-			CMsgPacker CSMsg(NETMSG_RUSHIE_CHECKSUM_RESPONSE, true);
-			CSMsg.AddRaw(pUuid, sizeof(*pUuid));
-			CSMsg.AddRaw(&Sha256, sizeof(Sha256));
-			SendMsg(Conn, &CSMsg, MSGFLAG_VITAL);
 		}
 		else if(Msg == NETMSG_RECONNECT)
 		{
