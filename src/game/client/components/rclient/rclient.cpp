@@ -1335,7 +1335,7 @@ std::vector<std::string> CRClient::GetWordsListRegex(int IsPlayer = 0) const
 
 void CRClient::ConFindSkin(IConsole::IResult *pResult, void *pUserData)
 {
-	CGameClient *pSelf = (CGameClient *)pUserData;
+	CRClient *pSelf = (CRClient *)pUserData;
 	const char *pInput = pResult->GetString(0);
 	char aInput[256];
 	str_copy(aInput, pInput, sizeof(aInput));
@@ -1344,7 +1344,7 @@ void CRClient::ConFindSkin(IConsole::IResult *pResult, void *pUserData)
 	// First try to find by name
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		if(str_comp_nocase(pSelf->m_aClients[i].m_aName, aInput) == 0)
+		if(str_comp_nocase(pSelf->GameClient()->m_aClients[i].m_aName, aInput) == 0)
 		{
 			ClientID = i;
 			break;
@@ -1359,7 +1359,7 @@ void CRClient::ConFindSkin(IConsole::IResult *pResult, void *pUserData)
 	// Validate client ID
 	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
 	{
-		const CGameClient::CClientData &ClientData = pSelf->m_aClients[ClientID];
+		const CGameClient::CClientData &ClientData = pSelf->GameClient()->m_aClients[ClientID];
 		if(ClientData.m_aSkinName[0])
 		{
 			char aBuf[512];
@@ -1398,7 +1398,7 @@ void CRClient::ConFindSkin(IConsole::IResult *pResult, void *pUserData)
 	else
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", "Invalid client ID");
-		pSelf->Echo("No that player on server");
+		pSelf->GameClient()->Echo("No that player on server");
 	}
 }
 
