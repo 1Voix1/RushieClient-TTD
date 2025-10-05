@@ -106,7 +106,7 @@ void CEdgeHelper::OnRender()
 
 void CEdgeHelper::RenderEdgeHelper()
 {
-	CUIRect Base, Label, ButtonToggle, UpperButton, LowerButton;
+	CUIRect Base, Label;
 
 	Base.h = 100.0f * 3.0f / 6;
 	Base.w = 100.0f * 3.0f * Graphics()->ScreenAspect() / 5;
