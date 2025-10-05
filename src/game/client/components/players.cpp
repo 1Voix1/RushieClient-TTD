@@ -1,31 +1,29 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 
+#include "players.h"
+
+#include <base/color.h>
+#include <base/math.h>
+
 #include <engine/client/enums.h>
 #include <engine/demo.h>
 #include <engine/graphics.h>
 #include <engine/shared/config.h>
-#include <game/gamecore.h>
 
 #include <generated/client_data.h>
 #include <generated/client_data7.h>
 #include <generated/protocol.h>
 
-#include <game/mapitems.h>
-
 #include <game/client/animstate.h>
-#include <game/client/gameclient.h>
-
 #include <game/client/components/controls.h>
 #include <game/client/components/effects.h>
 #include <game/client/components/flow.h>
 #include <game/client/components/skins.h>
 #include <game/client/components/sounds.h>
-
-#include "players.h"
-
-#include <base/color.h>
-#include <base/math.h>
+#include <game/client/gameclient.h>
+#include <game/gamecore.h>
+#include <game/mapitems.h>
 
 // TClient
 #include <game/client/components/tclient/rainbow.h>
@@ -107,18 +105,18 @@ float CPlayers::GetPlayerTargetAngle(
 {
 	if(GameClient()->m_Snap.m_LocalClientId == ClientId && !GameClient()->m_Snap.m_SpecInfo.m_Active && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 	{
-		// just use the direct input if it's the local player we are rendering
 		// TClient
-		vec2 Pos = GameClient()->m_Controls.m_aMousePos[g_Config.m_ClDummy];
+		vec2 Direction = GameClient()->m_Controls.m_aMousePos[g_Config.m_ClDummy];
 		if(g_Config.m_TcScaleMouseDistance)
 		{
 			const int MaxDistance = g_Config.m_ClDyncam ? g_Config.m_ClDyncamMaxDistance : g_Config.m_ClMouseMaxDistance;
 			if(MaxDistance > 5 && MaxDistance < 1000) // Don't scale if angle bind or reduces precision
-				Pos *= 1000.0f / (float)MaxDistance;
+				Direction *= 1000.0f / (float)MaxDistance;
 		}
-		Pos.x = (int)Pos.x;
-		Pos.y = (int)Pos.y;
-		return angle(Pos);
+		Direction.x = (int)Direction.x;
+		Direction.y = (int)Direction.y;
+
+		return angle(Direction);
 	}
 
 	// using unpredicted angle when rendering other players in-game
@@ -163,11 +161,10 @@ float CPlayers::GetPlayerTargetAngle(
 void CPlayers::RenderHookCollLine(
 	const CNetObj_Character *pPrevChar,
 	const CNetObj_Character *pPlayerChar,
-	int ClientId,
-	float Intra)
+	int ClientId)
 {
 	// TClient
-	if(GameClient()->m_aClients[ClientId].m_IsVolleyBall)
+	if(ClientId >= 0 && GameClient()->m_aClients[ClientId].m_IsVolleyBall)
 		return;
 
 	CNetObj_Character Prev;
@@ -175,19 +172,15 @@ void CPlayers::RenderHookCollLine(
 	Prev = *pPrevChar;
 	Player = *pPlayerChar;
 
+	dbg_assert(in_range(ClientId, MAX_CLIENTS - 1), "invalid client id (%d)", ClientId);
+
 	bool Local = GameClient()->m_Snap.m_LocalClientId == ClientId;
 
-	if(ClientId >= 0)
-		Intra = GameClient()->m_aClients[ClientId].m_IsPredicted ? Client()->PredIntraGameTick(g_Config.m_ClDummy) : Client()->IntraGameTick(g_Config.m_ClDummy);
-
+	float Intra = GameClient()->m_aClients[ClientId].m_IsPredicted ? Client()->PredIntraGameTick(g_Config.m_ClDummy) : Client()->IntraGameTick(g_Config.m_ClDummy);
 	float Angle = GetPlayerTargetAngle(&Prev, &Player, ClientId, Intra);
 
 	vec2 Direction = direction(Angle);
-	vec2 Position;
-	if(in_range(ClientId, MAX_CLIENTS - 1))
-		Position = GameClient()->m_aClients[ClientId].m_RenderPos;
-	else
-		Position = mix(vec2(Prev.m_X, Prev.m_Y), vec2(Player.m_X, Player.m_Y), Intra);
+	vec2 Position = GameClient()->m_aClients[ClientId].m_RenderPos;
 
 	bool Aim = (Player.m_PlayerFlags & PLAYERFLAG_AIM);
 	if(!Client()->ServerCapAnyPlayerFlag())
@@ -208,95 +201,126 @@ void CPlayers::RenderHookCollLine(
 #endif
 
 	bool AlwaysRenderHookColl = GameClient()->m_GameInfo.m_AllowHookColl && (Local ? g_Config.m_ClShowHookCollOwn : g_Config.m_ClShowHookCollOther) == 2;
-	bool RenderHookCollPlayer = ClientId >= 0 && Aim && (Local ? g_Config.m_ClShowHookCollOwn : g_Config.m_ClShowHookCollOther) > 0;
+	bool RenderHookCollPlayer = Aim && (Local ? g_Config.m_ClShowHookCollOwn : g_Config.m_ClShowHookCollOther) > 0;
 	if(Local && GameClient()->m_GameInfo.m_AllowHookColl && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		RenderHookCollPlayer = GameClient()->m_Controls.m_aShowHookColl[g_Config.m_ClDummy] && g_Config.m_ClShowHookCollOwn > 0;
 	if(!AlwaysRenderHookColl && !RenderHookCollPlayer)
 		return;
 
-	// TClient dead code
-	// if(Local && !GameClient()->m_Snap.m_SpecInfo.m_Active && Client()->State() != IClient::STATE_DEMOPLAYBACK)
-	// {
-	// 	Direction = normalize(vec2((int)GameClient()->m_Controls.m_aMousePos[g_Config.m_ClDummy].x, (int)GameClient()->m_Controls.m_aMousePos[g_Config.m_ClDummy].y));
+	static constexpr float HOOK_START_DISTANCE = CCharacterCore::PhysicalSize() * 1.5f;
+	float HookLength = (float)GameClient()->m_aClients[ClientId].m_Predicted.m_Tuning.m_HookLength;
+	float HookFireSpeed = (float)GameClient()->m_aClients[ClientId].m_Predicted.m_Tuning.m_HookFireSpeed;
 
-	// 	// fix direction if mouse is exactly in the center
-	// 	if(!(int)GameClient()->m_Controls.m_aMousePos[g_Config.m_ClDummy].x && !(int)GameClient()->m_Controls.m_aMousePos[g_Config.m_ClDummy].y)
-	// 		Direction = vec2(1.0f, 0.0f);
-	// }
+	// janky physics
+	if(HookLength < HOOK_START_DISTANCE || HookFireSpeed <= 0.0f)
+		return;
 
-	vec2 InitPos = Position;
-	vec2 FinishPos = InitPos + Direction * (GameClient()->m_aClients[ClientId].m_Predicted.m_Tuning.m_HookLength - 42.0f);
+	vec2 QuantizedDirection = Direction;
+	vec2 StartOffset = Direction * HOOK_START_DISTANCE;
+	vec2 BasePos = Position;
+	vec2 LineStartPos = BasePos + StartOffset;
+	vec2 SegmentStartPos = LineStartPos;
 
 	ColorRGBA HookCollColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClHookCollColorNoColl));
+	std::vector<IGraphics::CLineItem> vLineSegments;
 
-	vec2 OldPos = InitPos + Direction * CCharacterCore::PhysicalSize() * 1.5f;
-	vec2 NewPos = OldPos;
+	const int MaxHookTicks = 5 * Client()->GameTickSpeed(); // calculating above 5 seconds is very expensive and unlikely to happen
 
-	bool DoBreak = false;
-
-	std::vector<std::pair<vec2, vec2>> vLineSegments;
-
-	// Calculate hook coll line position
-	do
+	// simulate the hook into the future
+	int HookTick;
+	for(HookTick = 0; HookTick < MaxHookTicks; ++HookTick)
 	{
-		OldPos = NewPos;
-		NewPos = OldPos + Direction * GameClient()->m_aClients[ClientId].m_Predicted.m_Tuning.m_HookFireSpeed;
+		int Tele;
+		vec2 HitPos;
+		vec2 SegmentEndPos = SegmentStartPos + QuantizedDirection * HookFireSpeed;
 
-		if(distance(InitPos, NewPos) > GameClient()->m_aClients[ClientId].m_Predicted.m_Tuning.m_HookLength)
+		// check if a hook would enter retracting state in this tick
+		if(distance(BasePos, SegmentEndPos) > HookLength)
 		{
-			NewPos = InitPos + normalize(NewPos - InitPos) * GameClient()->m_aClients[ClientId].m_Predicted.m_Tuning.m_HookLength;
-			DoBreak = true;
+			// the line is too long here, and the hook starts to retract, use old position
+			vLineSegments.emplace_back(LineStartPos, SegmentStartPos);
+			break;
 		}
 
-		int Tele;
-		int Hit = Collision()->IntersectLineTeleHook(OldPos, NewPos, &FinishPos, nullptr, &Tele);
+		// check for map collisions
+		int Hit = Collision()->IntersectLineTeleHook(SegmentStartPos, SegmentEndPos, &HitPos, nullptr, &Tele);
 
-		if(ClientId >= 0 && GameClient()->IntersectCharacter(OldPos, FinishPos, FinishPos, ClientId) != -1)
+		// check if we intersect a player
+		if(GameClient()->IntersectCharacter(SegmentStartPos, HitPos, SegmentEndPos, ClientId) != -1)
 		{
 			HookCollColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClHookCollColorTeeColl));
+			vLineSegments.emplace_back(LineStartPos, SegmentEndPos);
 			break;
 		}
 
-		if(!DoBreak && Hit == TILE_TELEINHOOK)
+		// we hit nothing, continue calculating segments
+		if(!Hit)
 		{
-			if(Collision()->TeleOuts(Tele - 1).size() != 1)
+			SegmentStartPos = SegmentEndPos;
+			SegmentStartPos.x = round_to_int(SegmentStartPos.x);
+			SegmentStartPos.y = round_to_int(SegmentStartPos.y);
+
+			// direction is always the same after the first tick quantization
+			if(HookTick == 0)
 			{
-				Hit = Collision()->IntersectLineTeleHook(OldPos, NewPos, &FinishPos, nullptr);
+				QuantizedDirection.x = round_to_int(QuantizedDirection.x * 256.0f) / 256.0f;
+				QuantizedDirection.y = round_to_int(QuantizedDirection.y * 256.0f) / 256.0f;
 			}
-			else
-			{
-				std::pair<vec2, vec2> NewPair = std::make_pair(InitPos, FinishPos);
-				if(std::find(vLineSegments.begin(), vLineSegments.end(), NewPair) != vLineSegments.end())
-					break;
-				vLineSegments.push_back(NewPair);
-				InitPos = NewPos = Collision()->TeleOuts(Tele - 1)[0];
-			}
+			continue;
 		}
 
-		if(!DoBreak && Hit && Hit != TILE_TELEINHOOK)
+		// we hit a solid / hook stopper
+		if(Hit != TILE_TELEINHOOK)
 		{
 			if(Hit != TILE_NOHOOK)
-			{
 				HookCollColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClHookCollColorHookableColl));
-			}
+			vLineSegments.emplace_back(LineStartPos, HitPos);
+			break;
 		}
 
-		if(Hit && Hit != TILE_TELEINHOOK)
+		// we are hitting TILE_TELEINHOOK
+		vLineSegments.emplace_back(LineStartPos, HitPos);
+
+		// check tele outs
+		const std::vector<vec2> &vTeleOuts = Collision()->TeleOuts(Tele - 1);
+		if(vTeleOuts.empty())
+		{
+			// the hook gets stuck, this is a feature or a bug
+			HookCollColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClHookCollColorHookableColl));
 			break;
-
-		NewPos.x = round_to_int(NewPos.x);
-		NewPos.y = round_to_int(NewPos.y);
-
-		if(OldPos == NewPos)
+		}
+		else if(vTeleOuts.size() > 1)
+		{
+			// we don't know which teleout the hook takes, just invert the color
+			HookCollColor = color_invert(color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClHookCollColorTeeColl)));
 			break;
+		}
 
-		Direction.x = round_to_int(Direction.x * 256.0f) / 256.0f;
-		Direction.y = round_to_int(Direction.y * 256.0f) / 256.0f;
-	} while(!DoBreak);
+		// go through one teleout, update positions and continue
+		BasePos = vTeleOuts[0];
+		LineStartPos = BasePos; // make the line start in the teleporter to prevent a gap
+		SegmentStartPos = BasePos + Direction * HOOK_START_DISTANCE;
+		SegmentStartPos.x = round_to_int(SegmentStartPos.x);
+		SegmentStartPos.y = round_to_int(SegmentStartPos.y);
 
-	std::pair<vec2, vec2> NewPair = std::make_pair(InitPos, FinishPos);
-	if(std::find(vLineSegments.begin(), vLineSegments.end(), NewPair) == vLineSegments.end())
-		vLineSegments.push_back(NewPair);
+		// direction is always the same after the first tick quantization
+		if(HookTick == 0)
+		{
+			QuantizedDirection.x = round_to_int(QuantizedDirection.x * 256.0f) / 256.0f;
+			QuantizedDirection.y = round_to_int(QuantizedDirection.y * 256.0f) / 256.0f;
+		}
+	}
+
+	// The hook line is too expensive to calculate and didn't hit anything before, just set a straight line
+	if(HookTick >= MaxHookTicks && vLineSegments.empty())
+	{
+		// we simply don't know if we hit anything or not
+		HookCollColor = color_invert(color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClHookCollColorTeeColl)));
+		vLineSegments.emplace_back(LineStartPos, BasePos + QuantizedDirection * HookLength);
+	}
+
+	// add a line from the player to the start position to prevent a visual gap
+	vLineSegments.emplace_back(Position, Position + StartOffset);
 
 	if(AlwaysRenderHookColl && RenderHookCollPlayer)
 	{
@@ -305,46 +329,46 @@ void CPlayers::RenderHookCollLine(
 	}
 
 	// Render hook coll line
-	Graphics()->TextureClear();
 	const int HookCollSize = Local ? g_Config.m_ClHookCollSize : g_Config.m_ClHookCollSizeOther;
-	if(HookCollSize > 0)
-		Graphics()->QuadsBegin();
-	else
-		Graphics()->LinesBegin();
 
-	bool OtherTeam = GameClient()->IsOtherTeam(ClientId);
-	float Alpha = (OtherTeam || ClientId < 0) ? g_Config.m_ClShowOthersAlpha / 100.0f : 1.0f;
+	float Alpha = GameClient()->IsOtherTeam(ClientId) ? g_Config.m_ClShowOthersAlpha / 100.0f : 1.0f;
 	Alpha *= (float)g_Config.m_ClHookCollAlpha / 100;
-	Graphics()->SetColor(HookCollColor.WithAlpha(Alpha));
+	if(Alpha <= 0.0f)
+		return;
 
-	for(const auto &[DrawInitPos, DrawFinishPos] : vLineSegments)
+	Graphics()->TextureClear();
+	if(HookCollSize > 0)
 	{
-		if(HookCollSize > 0)
+		std::vector<IGraphics::CFreeformItem> vLineQuadSegments;
+		vLineQuadSegments.reserve(vLineSegments.size());
+
+		float LineWidth = 0.5f + (float)(HookCollSize - 1) * 0.25f;
+		const vec2 PerpToAngle = normalize(vec2(Direction.y, -Direction.x)) * GameClient()->m_Camera.m_Zoom;
+
+		for(const auto &LineSegment : vLineSegments)
 		{
-			float LineWidth = 0.5f + (float)(HookCollSize - 1) * 0.25f;
-			vec2 PerpToAngle = normalize(vec2(Direction.y, -Direction.x)) * GameClient()->m_Camera.m_Zoom;
+			vec2 DrawInitPos(LineSegment.m_X0, LineSegment.m_Y0);
+			vec2 DrawFinishPos(LineSegment.m_X1, LineSegment.m_Y1);
 			vec2 Pos0 = DrawFinishPos + PerpToAngle * -LineWidth;
 			vec2 Pos1 = DrawFinishPos + PerpToAngle * LineWidth;
 			vec2 Pos2 = DrawInitPos + PerpToAngle * -LineWidth;
 			vec2 Pos3 = DrawInitPos + PerpToAngle * LineWidth;
-			IGraphics::CFreeformItem FreeformItem(Pos0.x, Pos0.y, Pos1.x, Pos1.y, Pos2.x, Pos2.y, Pos3.x, Pos3.y);
-			Graphics()->QuadsDrawFreeform(&FreeformItem, 1);
+			vLineQuadSegments.emplace_back(Pos0.x, Pos0.y, Pos1.x, Pos1.y, Pos2.x, Pos2.y, Pos3.x, Pos3.y);
 		}
-		else
-		{
-			IGraphics::CLineItem LineItem(DrawInitPos.x, DrawInitPos.y, DrawFinishPos.x, DrawFinishPos.y);
-			Graphics()->LinesDraw(&LineItem, 1);
-		}
-	}
-	if(HookCollSize > 0)
-	{
+		Graphics()->QuadsBegin();
+		Graphics()->SetColor(HookCollColor.WithAlpha(Alpha));
+		Graphics()->QuadsDrawFreeform(vLineQuadSegments.data(), vLineQuadSegments.size());
 		Graphics()->QuadsEnd();
 	}
 	else
 	{
+		Graphics()->LinesBegin();
+		Graphics()->SetColor(HookCollColor.WithAlpha(Alpha));
+		Graphics()->LinesDraw(vLineSegments.data(), vLineSegments.size());
 		Graphics()->LinesEnd();
 	}
 }
+
 void CPlayers::RenderHook(
 	const CNetObj_Character *pPrevChar,
 	const CNetObj_Character *pPlayerChar,
@@ -520,7 +544,7 @@ void CPlayers::RenderPlayer(
 	GameClient()->m_Flow.Add(Position, Vel * 100.0f, 10.0f);
 
 	// TClient
-	if(GameClient()->m_aClients[ClientId].m_IsVolleyBall)
+	if(ClientId >= 0 && GameClient()->m_aClients[ClientId].m_IsVolleyBall)
 	{
 		// Update
 		const float Delta = Client()->IntraGameTickSincePrev(g_Config.m_ClDummy);
@@ -551,6 +575,8 @@ void CPlayers::RenderPlayer(
 		Graphics()->QuadsEnd();
 		return;
 	}
+	if(g_Config.m_TcFakeCtfFlags > 0)
+		GameClient()->m_TClient.RenderCtfFlag(Position, Alpha);
 
 	RenderInfo.m_GotAirJump = Player.m_Jumped & 2 ? false : true;
 
@@ -1364,9 +1390,9 @@ void CPlayers::RenderPlayerGhost(
 }
 inline bool CPlayers::IsPlayerInfoAvailable(int ClientId) const
 {
-	const void *pPrevInfo = Client()->SnapFindItem(IClient::SNAP_PREV, NETOBJTYPE_PLAYERINFO, ClientId);
-	const void *pInfo = Client()->SnapFindItem(IClient::SNAP_CURRENT, NETOBJTYPE_PLAYERINFO, ClientId);
-	return pPrevInfo && pInfo;
+	return GameClient()->m_Snap.m_aCharacters[ClientId].m_Active &&
+	       GameClient()->m_Snap.m_apPrevPlayerInfos[ClientId] != nullptr &&
+	       GameClient()->m_Snap.m_apPlayerInfos[ClientId] != nullptr;
 }
 
 void CPlayers::OnRender()
@@ -1454,13 +1480,13 @@ void CPlayers::OnRender()
 	const int LocalClientId = GameClient()->m_Snap.m_LocalClientId;
 	for(int ClientId = 0; ClientId < MAX_CLIENTS; ClientId++)
 	{
-		if(ClientId == LocalClientId || !GameClient()->m_Snap.m_aCharacters[ClientId].m_Active || !IsPlayerInfoAvailable(ClientId))
+		if(ClientId == LocalClientId || !IsPlayerInfoAvailable(ClientId))
 		{
 			continue;
 		}
 		RenderHook(&GameClient()->m_aClients[ClientId].m_RenderPrev, &GameClient()->m_aClients[ClientId].m_RenderCur, &aRenderInfo[ClientId], ClientId);
 	}
-	if(LocalClientId != -1 && GameClient()->m_Snap.m_aCharacters[LocalClientId].m_Active && IsPlayerInfoAvailable(LocalClientId))
+	if(LocalClientId != -1 && IsPlayerInfoAvailable(LocalClientId))
 	{
 		const CGameClient::CClientData *pLocalClientData = &GameClient()->m_aClients[LocalClientId];
 		RenderHook(&pLocalClientData->m_RenderPrev, &pLocalClientData->m_RenderCur, &aRenderInfo[LocalClientId], LocalClientId);
@@ -1488,7 +1514,7 @@ void CPlayers::OnRender()
 
 	for(int ClientId = 0; ClientId < MAX_CLIENTS; ClientId++)
 	{
-		if(ClientId == RenderLastId || !GameClient()->m_Snap.m_aCharacters[ClientId].m_Active || !IsPlayerInfoAvailable(ClientId))
+		if(ClientId == RenderLastId || !IsPlayerInfoAvailable(ClientId))
 		{
 			continue;
 		}
@@ -1521,7 +1547,7 @@ void CPlayers::OnRender()
 
 		RenderPlayer(&GameClient()->m_aClients[ClientId].m_RenderPrev, &GameClient()->m_aClients[ClientId].m_RenderCur, &aRenderInfo[ClientId], ClientId);
 	}
-	if(RenderLastId != -1 && GameClient()->m_Snap.m_aCharacters[RenderLastId].m_Active && IsPlayerInfoAvailable(RenderLastId))
+	if(RenderLastId != -1 && IsPlayerInfoAvailable(RenderLastId))
 	{
 		const CGameClient::CClientData *pClientData = &GameClient()->m_aClients[RenderLastId];
 		RenderHookCollLine(&pClientData->m_RenderPrev, &pClientData->m_RenderCur, RenderLastId);

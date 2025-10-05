@@ -1,5 +1,10 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include "binds.h"
+#include "countryflags.h"
+#include "menus.h"
+#include "skins.h"
+
 #include <base/log.h>
 #include <base/math.h>
 #include <base/system.h>
@@ -25,11 +30,6 @@
 #include <game/client/ui_listbox.h>
 #include <game/client/ui_scrollregion.h>
 #include <game/localization.h>
-
-#include "binds.h"
-#include "countryflags.h"
-#include "menus.h"
-#include "skins.h"
 
 #include <array>
 #include <chrono>
@@ -2526,7 +2526,7 @@ void CMenus::RenderSettingsAppearance(CUIRect MainView)
 		}
 
 		static CButtonContainer s_BackgroundColor;
-		DoLine_ColorPicker(&s_BackgroundColor, ColorPickerLineSize, ColorPickerLabelSize, ColorPickerLineSpacing, &LeftView, Localize("Chat background color"), &g_Config.m_ClChatBackgroundColor, static_cast<ColorRGBA>(ColorHSLA(CConfig::ms_ClChatBackgroundColor, true)), false, nullptr, true);
+		DoLine_ColorPicker(&s_BackgroundColor, ColorPickerLineSize, ColorPickerLabelSize, ColorPickerLineSpacing, &LeftView, Localize("Chat background color"), &g_Config.m_ClChatBackgroundColor, color_cast<ColorRGBA>(ColorHSLA(CConfig::ms_ClChatBackgroundColor, true)), false, nullptr, true);
 
 		// ***** Messages ***** //
 		Ui()->DoLabel_AutoLineSize(Localize("Messages"), HeadlineFontSize,

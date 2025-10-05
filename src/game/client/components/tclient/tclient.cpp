@@ -1,13 +1,8 @@
 ﻿#include <base/log.h>
 
-#include <game/client/animstate.h>
-#include <game/client/components/chat.h>
-#include <game/client/gameclient.h>
-#include <game/client/render.h>
-#include <game/client/ui.h>
+#include "tclient.h"
 
-#include <game/localization.h>
-#include <game/version.h>
+#include "data_version.h"
 
 #include <engine/client/enums.h>
 #include <engine/external/tinyexpr.h>
@@ -17,9 +12,13 @@
 
 #include <generated/client_data.h>
 
-#include "data_version.h"
-
-#include "tclient.h"
+#include <game/client/animstate.h>
+#include <game/client/components/chat.h>
+#include <game/client/gameclient.h>
+#include <game/client/render.h>
+#include <game/client/ui.h>
+#include <game/localization.h>
+#include <game/version.h>
 
 static constexpr const char *TCLIENT_INFO_URL = "https://update.tclient.app/info.json";
 
@@ -827,4 +826,24 @@ void CTClient::RenderCenterLines()
 		Graphics()->QuadsDraw(aQuads, std::size(aQuads));
 		Graphics()->QuadsEnd();
 	}
+}
+
+void CTClient::RenderCtfFlag(vec2 Pos, float Alpha)
+{
+	// from CItems::RenderFlag
+	float Size = 42.0f;
+	int QuadOffset;
+	if(g_Config.m_TcFakeCtfFlags == 1)
+	{
+		Graphics()->TextureSet(GameClient()->m_GameSkin.m_SpriteFlagRed);
+		QuadOffset = GameClient()->m_Items.m_RedFlagOffset;
+	}
+	else
+	{
+		Graphics()->TextureSet(GameClient()->m_GameSkin.m_SpriteFlagBlue);
+		QuadOffset = GameClient()->m_Items.m_BlueFlagOffset;
+	}
+	Graphics()->QuadsSetRotation(0.0f);
+	Graphics()->SetColor(1.0f, 1.0f, 1.0f, Alpha);
+	Graphics()->RenderQuadContainerAsSprite(GameClient()->m_Items.m_ItemsQuadContainerIndex, QuadOffset, Pos.x, Pos.y - Size * 0.75f);
 }

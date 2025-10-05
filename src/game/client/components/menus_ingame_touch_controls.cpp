@@ -4,12 +4,11 @@
 #include <base/math.h>
 #include <base/system.h>
 
+#include <engine/external/json-parser/json.h>
 #include <engine/graphics.h>
+#include <engine/shared/jsonwriter.h>
 #include <engine/shared/localization.h>
 #include <engine/textrender.h>
-
-#include <engine/external/json-parser/json.h>
-#include <engine/shared/jsonwriter.h>
 
 #include <game/client/components/touch_controls.h>
 #include <game/client/gameclient.h>
@@ -88,7 +87,7 @@ void CMenusIngameTouchControls::RenderTouchButtonEditor(CUIRect MainView)
 	case EElementType::LAYOUT: Changed |= RenderLayoutSettingBlock(Block); break;
 	case EElementType::VISIBILITY: Changed |= RenderVisibilitySettingBlock(Block); break;
 	case EElementType::BEHAVIOR: Changed |= RenderBehaviorSettingBlock(Block); break;
-	default: dbg_assert(false, "Unknown m_EditElement = %d.", m_EditElement);
+	default: dbg_assert(false, "Unknown m_EditElement = %d.", (int)m_EditElement);
 	}
 
 	// Save & Cancel & Hint.
