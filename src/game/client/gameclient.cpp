@@ -171,6 +171,7 @@ void CGameClient::OnConsoleInit()
 					      &m_DebugHud,
 					      &m_TouchControls,
 					      &m_AdminPanelRi,
+					      &m_EdgeHelper,
 					      &m_Scoreboard,
 					      &m_Statboard,
 					      &m_Motd,

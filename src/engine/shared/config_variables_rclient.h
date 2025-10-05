@@ -94,3 +94,6 @@ MACRO_CONFIG_STR(RiDiscordOfflineStatus, ri_discord_offline_status, 25, "Offline
 
 // RCON
 MACRO_CONFIG_INT(RiPlaySounds, ri_play_sounds, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Plays sound when do command")
+
+//Egde helper
+//MACRO_CONFIG_INT(RiToggleEdgeHelper, ri_toggle_edge_helper, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Toggle edge helper bind or not")

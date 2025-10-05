@@ -2538,6 +2538,8 @@ if(CLIENT)
     components/rclient/bindwheel.h
     components/rclient/chat_bubbles.cpp
     components/rclient/chat_bubbles.h
+    components/rclient/edgehelper.cpp
+    components/rclient/edgehelper.h
     components/rclient/menus_rclient.cpp
     components/rclient/rclient.cpp
     components/rclient/rclient.h

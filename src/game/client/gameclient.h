@@ -68,6 +68,7 @@
 #include "components/rclient/bindwheel.h"
 #include "components/rclient/chat_bubbles.h"
 #include "components/rclient/rclient.h"
+#include "components/rclient/edgehelper.h"
 
 //Tater
 #include "components/tclient/bg_draw.h"
@@ -234,6 +235,7 @@ public:
 	CRClient m_RClient;
 	CBindWheelSpec m_BindWheelSpec;
 	CAdminPanel m_AdminPanelRi;
+	CEdgeHelper m_EdgeHelper;
 
 private:
 	std::vector<class CComponent *> m_vpAll;
