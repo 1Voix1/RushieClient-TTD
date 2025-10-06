@@ -26,6 +26,7 @@ struct SEdgeHelperProperties
 	static constexpr float ms_GroupSpacing = 5.0f;
 
 	static constexpr float ms_CubeSize = 24.0f;
+	static constexpr float ms_ArrowsSize = 18.0f;
 	static constexpr float ms_WallWidth = 3.0f;
 	static constexpr float ms_CircleRadius = 8.0f;
 	static constexpr float ms_CircleThickness = 2.0f;
@@ -66,7 +67,7 @@ CEdgeHelper::CEdgeHelper()
 
 void CEdgeHelper::OnConsoleInit()
 {
-	Console()->Register("toggle_edgehelper", "", CFGFLAG_CLIENT, ConToggleEdgeHelper, this, "Toggle admin panel");
+	Console()->Register("toggle_edgeinfo", "", CFGFLAG_CLIENT, ConToggleEdgeHelper, this, "Toggle edge info");
 }
 
 void CEdgeHelper::ConToggleEdgeHelper(IConsole::IResult *pResult, void *pUserData)
@@ -225,15 +226,66 @@ void CEdgeHelper::RenderEdgeHelperEdgeInfo(CUIRect *pBase)
 
 void CEdgeHelper::RenderEdgeHelperJumpInfo(CUIRect *pBase)
 {
-	CUIRect Label, Line;
-	pBase->HSplitTop(1, &Line, pBase);
-	Line.Draw(SEdgeHelperProperties::WindowColorMedium(), IGraphics::CORNER_NONE, 0);
+	CUIRect Label, LeftZone, RightZone, CenterZone;
 	pBase->HSplitTop(SEdgeHelperProperties::ms_ItemSpacing, nullptr, pBase);
-	pBase->HSplitTop(SEdgeHelperProperties::ms_HeadlineFontSize, &Label, pBase);
+	float ActionSpacing = (pBase->w - (2 * SEdgeHelperProperties::ms_ArrowsSize + 3 * SEdgeHelperProperties::ms_ArrowsSize)) / 4;
+	pBase->VSplitLeft(SEdgeHelperProperties::ms_ArrowsSize + ActionSpacing, &LeftZone, &CenterZone);
+	CenterZone.VSplitRight(SEdgeHelperProperties::ms_ArrowsSize + ActionSpacing, &CenterZone, &RightZone);
+	LeftZone.VSplitRight(ActionSpacing, &LeftZone, nullptr);
+	RightZone.VSplitLeft(ActionSpacing, nullptr, &RightZone);
+	LeftZone.Margin(SEdgeHelperProperties::ms_ItemSpacing, &LeftZone);
+	RightZone.Margin(SEdgeHelperProperties::ms_ItemSpacing, &RightZone);
+	DoIconButton(&LeftZone, FontIcons::FONT_ICON_ANGLES_UP, SEdgeHelperProperties::ms_ArrowsSize, (m_Pos_x == 56 || m_Pos_x == 69 || m_Pos_x == 72 || m_Pos_x == 84) ? SEdgeHelperProperties::ActionWhiteButtonColor() : SEdgeHelperProperties::WindowColorMedium());
+	if(m_Pos_x == 62 || m_Pos_x == 63 || m_Pos_x == 66 || m_Pos_x == 81)
+	{
+		LeftZone.HSplitTop(5, nullptr, &LeftZone);
+		DoIconButton(&LeftZone, FontIcons::FONT_ICON_ANGLE_UP, SEdgeHelperProperties::ms_ArrowsSize, SEdgeHelperProperties::ActionWhiteButtonColor());
+	}
+	DoIconButton(&RightZone, FontIcons::FONT_ICON_ANGLES_UP, SEdgeHelperProperties::ms_ArrowsSize, (m_Pos_x == 13 || m_Pos_x == 25 || m_Pos_x == 28 || m_Pos_x == 41) ? SEdgeHelperProperties::ActionWhiteButtonColor() : SEdgeHelperProperties::WindowColorMedium());
+	if(m_Pos_x == 16 || m_Pos_x == 31)
+	{
+		RightZone.HSplitTop(5, nullptr, &RightZone);
+		DoIconButton(&RightZone, FontIcons::FONT_ICON_ANGLE_UP, SEdgeHelperProperties::ms_ArrowsSize, SEdgeHelperProperties::ActionWhiteButtonColor());
+	}
+	CenterZone.VSplitLeft(SEdgeHelperProperties::ms_ArrowsSize + ActionSpacing, &LeftZone, &CenterZone);
+	CenterZone.VSplitRight(SEdgeHelperProperties::ms_ArrowsSize + ActionSpacing, &CenterZone, &RightZone);
+	LeftZone.VSplitRight(ActionSpacing - 3, &LeftZone, nullptr);
+	LeftZone.VSplitLeft(3, nullptr, &LeftZone);
+	RightZone.VSplitLeft(ActionSpacing - 3, nullptr, &RightZone);
+	RightZone.VSplitRight(3, &RightZone, nullptr);
+	std::sort(values.begin(), values.end());
+
+	int lower = std::numeric_limits<int>::min();
+	int upper = std::numeric_limits<int>::max();
+
+	for (int v : values)
+	{
+		if (v <= m_Pos_x) lower = v;
+		if (v >= m_Pos_x)
+		{
+			upper = v;
+			break;
+		}
+	}
+
 	char aBuf[64];
-	str_format(aBuf, sizeof(aBuf), "Pos: %02i", m_Pos_x);
-	Ui()->DoLabel(&Label, aBuf, 12, TEXTALIGN_MC);
-	pBase->HSplitTop(5, nullptr, pBase);
+	str_format(aBuf, sizeof(aBuf), "%02i", m_Pos_x);
+	if(m_Pos_x == lower)
+		TextRender()->TextColor(SEdgeHelperProperties::ActionActiveButtonColor());
+	Ui()->DoLabel(&CenterZone, aBuf, 12, TEXTALIGN_MC);
+	TextRender()->TextColor(TextRender()->DefaultTextColor());
+
+	str_format(aBuf, sizeof(aBuf), "%s", (lower == std::numeric_limits<int>::min()) ? "-" : std::to_string(lower).c_str());
+	if(m_Pos_x == lower || m_Pos_x == upper)
+		TextRender()->TextColor(SEdgeHelperProperties::ActionActiveButtonColor());
+	Ui()->DoLabel(&LeftZone, aBuf, 12, TEXTALIGN_MC);
+	TextRender()->TextColor(TextRender()->DefaultTextColor());
+
+	str_format(aBuf, sizeof(aBuf), "%s", (upper == std::numeric_limits<int>::max()) ? "-" : std::to_string(upper).c_str());
+	if(m_Pos_x == upper)
+		TextRender()->TextColor(SEdgeHelperProperties::ActionActiveButtonColor());
+	Ui()->DoLabel(&RightZone, aBuf, 12, TEXTALIGN_MC);
+	TextRender()->TextColor(TextRender()->DefaultTextColor());
 }
 
 bool CEdgeHelper::IsActive() const
@@ -242,4 +294,15 @@ bool CEdgeHelper::IsActive() const
 		return true;
 
 	return false;
+}
+
+void CEdgeHelper::DoIconButton(CUIRect *pRect, const char *pIcon, float TextSize, ColorRGBA IconColor) const
+{
+	TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
+	TextRender()->SetRenderFlags(ETextRenderFlags::TEXT_RENDER_FLAG_ONLY_ADVANCE_WIDTH | ETextRenderFlags::TEXT_RENDER_FLAG_NO_X_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_Y_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_OVERSIZE);
+	TextRender()->TextColor(IconColor);
+	Ui()->DoLabel(pRect, pIcon, TextSize, TEXTALIGN_MC);
+	TextRender()->TextColor(TextRender()->DefaultTextColor());
+	TextRender()->SetRenderFlags(0);
+	TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
 }

@@ -160,9 +160,12 @@ namespace FontIcons
 
 	[[maybe_unused]] static const char *FONT_ICON_CAMERA = "\xEF\x80\xB0";
 
+	// RClient
 	[[maybe_unused]] static const char *FONT_ICON_GAVEL = "\xEF\x83\xA3";
 	[[maybe_unused]] static const char *FONT_ICON_DOOR_OPEN = "\xEF\x94\xAB";
 	[[maybe_unused]] static const char *FONT_ICON_SCULL = "\xEF\x95\x8C";
+	[[maybe_unused]] static const char *FONT_ICON_ANGLE_UP = "\xEF\x84\x86";
+	[[maybe_unused]] static const char *FONT_ICON_ANGLES_UP = "\xEF\x84\x82";
 	// TClient
 	[[maybe_unused]] static const char *FONT_ICON_COMMENT_SLASH = "\xEF\x92\xB3";
 	[[maybe_unused]] static const char *FONT_ICON_USERS = "\xEF\x83\x80";
