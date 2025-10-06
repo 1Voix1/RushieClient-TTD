@@ -8,6 +8,7 @@ class CEdgeHelper : public CComponent
 {
 	bool m_Active = false;
 
+	int m_Pos_x;
 	static void ConToggleEdgeHelper(IConsole::IResult *pResult, void *pUserData);
 
 	CUIRect m_Rect;
@@ -16,7 +17,11 @@ class CEdgeHelper : public CComponent
 	{
 	}
 
+	float GetPositionEdgeHelper(int ClientId, int Conn);
+
 	void RenderEdgeHelper();
+	void RenderEdgeHelperEdgeInfo(CUIRect *pBase);
+	void RenderEdgeHelperJumpInfo(CUIRect *pBase);
 
 public:
 	CEdgeHelper();
