@@ -113,7 +113,7 @@ void CEdgeHelper::OnRender()
 
 void CEdgeHelper::RenderEdgeHelper()
 {
-	CUIRect Base, Label, EdgeInfo, JumpInfo;
+	CUIRect Base, EdgeInfo, JumpInfo;
 
 	Base.h = 100.0f * 3.0f / 6;
 	Base.w = 100.0f * 3.0f * Graphics()->ScreenAspect() / 5;
