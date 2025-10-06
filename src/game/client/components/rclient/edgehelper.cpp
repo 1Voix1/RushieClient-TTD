@@ -27,12 +27,14 @@ struct SEdgeHelperProperties
 
 	static constexpr float ms_CubeSize = 24.0f;
 	static constexpr float ms_WallWidth = 3.0f;
-	static constexpr float ms_CircleRadius = 10.0f;
+	static constexpr float ms_CircleRadius = 8.0f;
+	static constexpr float ms_CircleThickness = 2.0f;
 
 	static constexpr float ms_HeadlineFontSize = 8.0f;
 
 	static ColorRGBA WindowColor() { return ColorRGBA(0.451f, 0.451f, 0.451f, 0.9f); };
 	static ColorRGBA WindowColorDark() { return ColorRGBA(0.2f, 0.2f, 0.2f, 0.9f); };
+	static ColorRGBA WindowColorMedium() { return ColorRGBA(0.35f, 0.35f, 0.35f, 0.9f); };
 	static ColorRGBA GeneralButtonColor() { return ColorRGBA(0.541f, 0.561f, 0.48f, 0.8f); };
 	static ColorRGBA GeneralActiveButtonColor() { return ColorRGBA(0.53f, 0.78f, 0.53f, 0.8f); };
 
@@ -40,6 +42,7 @@ struct SEdgeHelperProperties
 	static ColorRGBA ActionActiveButtonColor() { return ColorRGBA(0.53f, 0.78f, 0.53f, 0.8f); };
 	static ColorRGBA ActionAltActiveButtonColor() { return ColorRGBA(1.0f, 0.42f, 0.42f, 0.8f); };
 	static ColorRGBA BlueSteelButtonColor() { return ColorRGBA(0.2f, 0.4f, 0.65f, 0.8f); };
+	static ColorRGBA ActionWhiteButtonColor() { return ColorRGBA(1.0f, 1.0f, 1.0f, 0.8f); };
 
 	static ColorRGBA TeamsGeneralButtonColor() { return ColorRGBA(0.32f, 0.32f, 0.72f, 0.8f); };
 	static ColorRGBA TeamsActiveButtonColor() { return ColorRGBA(0.31f, 0.52f, 0.78f, 0.8f); };
@@ -184,17 +187,47 @@ void CEdgeHelper::RenderEdgeHelperEdgeInfo(CUIRect *pBase)
 	LeftZone.VSplitLeft(3, nullptr, &LeftZone);
 	RightZone.VSplitLeft(ActionSpacing - 3, nullptr, &RightZone);
 	RightZone.VSplitRight(3, &RightZone, nullptr);
-	LeftZone.Draw(SEdgeHelperProperties::WindowColor(), IGraphics::CORNER_NONE, 0);
-	RightZone.Draw(SEdgeHelperProperties::WindowColor(), IGraphics::CORNER_NONE, 0);
+	LeftZone.Draw(m_Pos_x >= 44 && m_Pos_x < 53 ? SEdgeHelperProperties::ActionWhiteButtonColor() : SEdgeHelperProperties::WindowColorMedium(), IGraphics::CORNER_NONE, 0);
+	RightZone.Draw(m_Pos_x <= 53 && m_Pos_x > 44 ? SEdgeHelperProperties::ActionWhiteButtonColor() : SEdgeHelperProperties::WindowColorMedium(), IGraphics::CORNER_NONE, 0);
 	CenterZone.Margin(SEdgeHelperProperties::ms_ItemSpacing, &CenterZone);
-	CenterZone.Draw(SEdgeHelperProperties::WindowColor(), IGraphics::CORNER_ALL, CenterZone.w/2);
+	Graphics()->TextureClear();
+	Graphics()->QuadsBegin();
+	Graphics()->SetColor(m_Pos_x > 44 && m_Pos_x < 53 ? SEdgeHelperProperties::ActionWhiteButtonColor() : SEdgeHelperProperties::WindowColorMedium());
+	Graphics()->DrawCircle(CenterZone.x + CenterZone.w / 2, CenterZone.y + CenterZone.h / 2, SEdgeHelperProperties::ms_CircleRadius, 16);
+	Graphics()->QuadsEnd();
+	//
+	if(m_Pos_x == 44 || m_Pos_x == 53)
+	{
+		Graphics()->TextureClear();
+		Graphics()->QuadsBegin();
+		Graphics()->SetColor(SEdgeHelperProperties::ActionWhiteButtonColor());
+
+		const int Segments = 16;
+		const float CenterX = CenterZone.x + CenterZone.w / 2.0f;
+		const float CenterY = CenterZone.y + CenterZone.h / 2.0f;
+		const float Radius = SEdgeHelperProperties::ms_CircleRadius;
+		const float Thickness = SEdgeHelperProperties::ms_CircleThickness;
+
+		for(int i = 0; i < Segments; ++i)
+		{
+			float a1 = 2.0f * pi * i / Segments;
+			float a2 = 2.0f * pi * (i + 1) / Segments;
+			IGraphics::CFreeformItem Quad(
+				CenterX + std::cos(a1) * (Radius - Thickness / 2.0f), CenterY + std::sin(a1) * (Radius - Thickness / 2.0f),
+				CenterX + std::cos(a2) * (Radius - Thickness / 2.0f), CenterY + std::sin(a2) * (Radius - Thickness / 2.0f),
+				CenterX + std::cos(a1) * (Radius + Thickness / 2.0f), CenterY + std::sin(a1) * (Radius + Thickness / 2.0f),
+				CenterX + std::cos(a2) * (Radius + Thickness / 2.0f), CenterY + std::sin(a2) * (Radius + Thickness / 2.0f));
+			Graphics()->QuadsDrawFreeform(&Quad, 1);
+		}
+		Graphics()->QuadsEnd();
+	}
 }
 
 void CEdgeHelper::RenderEdgeHelperJumpInfo(CUIRect *pBase)
 {
 	CUIRect Label, Line;
 	pBase->HSplitTop(1, &Line, pBase);
-	Line.Draw(SEdgeHelperProperties::WindowColor(), IGraphics::CORNER_NONE, 0);
+	Line.Draw(SEdgeHelperProperties::WindowColorMedium(), IGraphics::CORNER_NONE, 0);
 	pBase->HSplitTop(SEdgeHelperProperties::ms_ItemSpacing, nullptr, pBase);
 	pBase->HSplitTop(SEdgeHelperProperties::ms_HeadlineFontSize, &Label, pBase);
 	char aBuf[64];
