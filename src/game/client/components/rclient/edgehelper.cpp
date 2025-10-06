@@ -170,7 +170,7 @@ float CEdgeHelper::GetPositionEdgeHelper(int ClientId, int Conn)
 
 void CEdgeHelper::RenderEdgeHelperEdgeInfo(CUIRect *pBase)
 {
-	CUIRect Label, LeftZone, RightZone, CenterZone;
+	CUIRect LeftZone, RightZone, CenterZone;
 	pBase->HSplitBottom(SEdgeHelperProperties::ms_ItemSpacing, pBase, nullptr);
 	float ActionSpacing = (pBase->w - (2 * (SEdgeHelperProperties::ms_WallWidth + SEdgeHelperProperties::ms_CircleRadius + SEdgeHelperProperties::ms_CubeSize))) / 4;
 	pBase->VSplitLeft(SEdgeHelperProperties::ms_CubeSize + ActionSpacing, &LeftZone, &CenterZone);
