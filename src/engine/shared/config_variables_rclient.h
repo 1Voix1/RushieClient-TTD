@@ -97,3 +97,6 @@ MACRO_CONFIG_INT(RiPlaySounds, ri_play_sounds, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG
 
 //Egde helper
 //MACRO_CONFIG_INT(RiToggleEdgeHelper, ri_toggle_edge_helper, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Toggle edge helper bind or not")
+MACRO_CONFIG_COL(RiEdgeInfoColorFreeze, ri_edge_info_color_freeze, 3432482669, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Freeze color in edge info")
+MACRO_CONFIG_COL(RiEdgeInfoColorKill, ri_edge_info_color_kill, 3422617525, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Kill color in edge info")
+MACRO_CONFIG_COL(RiEdgeInfoColorSafe, ri_edge_info_color_safe, 3428146599, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Safe color in edge info")

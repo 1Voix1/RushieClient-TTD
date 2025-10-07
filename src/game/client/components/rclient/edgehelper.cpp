@@ -17,13 +17,10 @@
 #include "game/localization.h"
 struct SEdgeHelperProperties
 {
-	static constexpr float ms_FontSize = 8.0f;
-	static constexpr float ms_IconFontSize = 11.0f;
 	static constexpr float ms_Padding = 3.0f;
 	static constexpr float ms_Rounding = 3.0f;
 
 	static constexpr float ms_ItemSpacing = 2.0f;
-	static constexpr float ms_GroupSpacing = 5.0f;
 
 	static constexpr float ms_CubeSize = 24.0f;
 	static constexpr float ms_ArrowsSize = 18.0f;
@@ -36,28 +33,11 @@ struct SEdgeHelperProperties
 	static ColorRGBA WindowColor() { return ColorRGBA(0.451f, 0.451f, 0.451f, 0.9f); };
 	static ColorRGBA WindowColorDark() { return ColorRGBA(0.2f, 0.2f, 0.2f, 0.9f); };
 	static ColorRGBA WindowColorMedium() { return ColorRGBA(0.35f, 0.35f, 0.35f, 0.9f); };
-	static ColorRGBA GeneralButtonColor() { return ColorRGBA(0.541f, 0.561f, 0.48f, 0.8f); };
-	static ColorRGBA GeneralActiveButtonColor() { return ColorRGBA(0.53f, 0.78f, 0.53f, 0.8f); };
 
-	static ColorRGBA ActionGeneralButtonColor() { return ColorRGBA(0.541f, 0.561f, 0.48f, 0.8f); };
 	static ColorRGBA ActionActiveButtonColor() { return ColorRGBA(0.53f, 0.78f, 0.53f, 0.8f); };
 	static ColorRGBA ActionAltActiveButtonColor() { return ColorRGBA(1.0f, 0.42f, 0.42f, 0.8f); };
 	static ColorRGBA BlueSteelButtonColor() { return ColorRGBA(0.2f, 0.4f, 0.65f, 0.8f); };
 	static ColorRGBA ActionWhiteButtonColor() { return ColorRGBA(1.0f, 1.0f, 1.0f, 0.8f); };
-
-	static ColorRGBA TeamsGeneralButtonColor() { return ColorRGBA(0.32f, 0.32f, 0.72f, 0.8f); };
-	static ColorRGBA TeamsActiveButtonColor() { return ColorRGBA(0.31f, 0.52f, 0.78f, 0.8f); };
-
-	static ColorRGBA ActionSpecButtonColor() { return ColorRGBA(0.2f, 1.0f, 0.2f, 0.8f); }; // Bright green color for spec
-
-	static ColorRGBA ActionBanAltButtonColor() { return ColorRGBA(0.7f, 0.1f, 0.1f, 0.8f); };
-	static ColorRGBA ActionBanButtonColor() { return ColorRGBA(1.0f, 0.24f, 0.24f, 0.8f); };
-	static ColorRGBA ActionKillAltButtonColor() { return ColorRGBA(0.5f, 0.45f, 0.0f, 0.8f); };
-	static ColorRGBA ActionKillButtonColor() { return ColorRGBA(1.0f, 0.902f, 0.0f, 0.8f); };
-	static ColorRGBA ActionKickAltButtonColor() { return ColorRGBA(0.5f, 0.27f, 0.0f, 0.8f); };
-	static ColorRGBA ActionKickButtonColor() { return ColorRGBA(1.0f, 0.549f, 0.0f, 0.8f); };
-	static ColorRGBA ActionMuteAltButtonColor() { return ColorRGBA(0.25f, 0.0f, 0.25f, 0.8f); };
-	static ColorRGBA ActionMuteButtonColor() { return ColorRGBA(0.502f, 0.0f, 0.502f, 0.8f); };
 };
 
 CEdgeHelper::CEdgeHelper()
@@ -67,13 +47,14 @@ CEdgeHelper::CEdgeHelper()
 
 void CEdgeHelper::OnConsoleInit()
 {
-	Console()->Register("toggle_edgeinfo", "", CFGFLAG_CLIENT, ConToggleEdgeHelper, this, "Toggle edge info");
+	Console()->Register("ri_toggle_edgeinfo", "", CFGFLAG_CLIENT, ConToggleEdgeHelper, this, "Toggle edge info");
 }
 
 void CEdgeHelper::ConToggleEdgeHelper(IConsole::IResult *pResult, void *pUserData)
 {
 	CEdgeHelper *pSelf = (CEdgeHelper *)pUserData;
 	pSelf->SetActive(!pSelf->IsActive());
+
 }
 
 void CEdgeHelper::SetActive(bool Active)
@@ -180,8 +161,8 @@ void CEdgeHelper::RenderEdgeHelperEdgeInfo(CUIRect *pBase)
 	RightZone.VSplitLeft(ActionSpacing + 2, nullptr, &RightZone);
 	LeftZone.Margin(SEdgeHelperProperties::ms_ItemSpacing, &LeftZone);
 	RightZone.Margin(SEdgeHelperProperties::ms_ItemSpacing, &RightZone);
-	LeftZone.Draw(m_Pos_x >= 44 ? SEdgeHelperProperties::BlueSteelButtonColor() : m_Pos_x >= 28 ? SEdgeHelperProperties::ActionActiveButtonColor() : SEdgeHelperProperties::ActionAltActiveButtonColor(), IGraphics::CORNER_NONE, 0);
-	RightZone.Draw(m_Pos_x <= 53 ? SEdgeHelperProperties::BlueSteelButtonColor() : m_Pos_x <= 69 ? SEdgeHelperProperties::ActionActiveButtonColor() : SEdgeHelperProperties::ActionAltActiveButtonColor(), IGraphics::CORNER_NONE, 0);
+	LeftZone.Draw(m_Pos_x >= 44 ? color_cast<ColorRGBA>(ColorHSLA(g_Config.m_RiEdgeInfoColorFreeze)) : m_Pos_x >= 28 ? color_cast<ColorRGBA>(ColorHSLA(g_Config.m_RiEdgeInfoColorSafe)) : color_cast<ColorRGBA>(ColorHSLA(g_Config.m_RiEdgeInfoColorKill)), IGraphics::CORNER_ALL, SEdgeHelperProperties::ms_Rounding);
+	RightZone.Draw(m_Pos_x <= 53 ? color_cast<ColorRGBA>(ColorHSLA(g_Config.m_RiEdgeInfoColorFreeze)) : m_Pos_x <= 69 ? color_cast<ColorRGBA>(ColorHSLA(g_Config.m_RiEdgeInfoColorSafe)) : color_cast<ColorRGBA>(ColorHSLA(g_Config.m_RiEdgeInfoColorKill)), IGraphics::CORNER_ALL, SEdgeHelperProperties::ms_Rounding);
 	CenterZone.VSplitLeft(SEdgeHelperProperties::ms_WallWidth + ActionSpacing, &LeftZone, &CenterZone);
 	CenterZone.VSplitRight(SEdgeHelperProperties::ms_WallWidth + ActionSpacing, &CenterZone, &RightZone);
 	LeftZone.VSplitRight(ActionSpacing - 3, &LeftZone, nullptr);
@@ -235,17 +216,17 @@ void CEdgeHelper::RenderEdgeHelperJumpInfo(CUIRect *pBase)
 	RightZone.VSplitLeft(ActionSpacing, nullptr, &RightZone);
 	LeftZone.Margin(SEdgeHelperProperties::ms_ItemSpacing, &LeftZone);
 	RightZone.Margin(SEdgeHelperProperties::ms_ItemSpacing, &RightZone);
-	DoIconButton(&LeftZone, FontIcons::FONT_ICON_ANGLES_UP, SEdgeHelperProperties::ms_ArrowsSize, (m_Pos_x == 56 || m_Pos_x == 69 || m_Pos_x == 72 || m_Pos_x == 84) ? SEdgeHelperProperties::ActionWhiteButtonColor() : SEdgeHelperProperties::WindowColorMedium());
+	DoIconButton(&RightZone, FontIcons::FONT_ICON_ANGLES_UP, SEdgeHelperProperties::ms_ArrowsSize, (m_Pos_x == 56 || m_Pos_x == 69 || m_Pos_x == 72 || m_Pos_x == 84) ? SEdgeHelperProperties::ActionWhiteButtonColor() : SEdgeHelperProperties::WindowColorMedium());
 	if(m_Pos_x == 62 || m_Pos_x == 63 || m_Pos_x == 66 || m_Pos_x == 81)
-	{
-		LeftZone.HSplitTop(5, nullptr, &LeftZone);
-		DoIconButton(&LeftZone, FontIcons::FONT_ICON_ANGLE_UP, SEdgeHelperProperties::ms_ArrowsSize, SEdgeHelperProperties::ActionWhiteButtonColor());
-	}
-	DoIconButton(&RightZone, FontIcons::FONT_ICON_ANGLES_UP, SEdgeHelperProperties::ms_ArrowsSize, (m_Pos_x == 13 || m_Pos_x == 25 || m_Pos_x == 28 || m_Pos_x == 41) ? SEdgeHelperProperties::ActionWhiteButtonColor() : SEdgeHelperProperties::WindowColorMedium());
-	if(m_Pos_x == 16 || m_Pos_x == 31)
 	{
 		RightZone.HSplitTop(5, nullptr, &RightZone);
 		DoIconButton(&RightZone, FontIcons::FONT_ICON_ANGLE_UP, SEdgeHelperProperties::ms_ArrowsSize, SEdgeHelperProperties::ActionWhiteButtonColor());
+	}
+	DoIconButton(&LeftZone, FontIcons::FONT_ICON_ANGLES_UP, SEdgeHelperProperties::ms_ArrowsSize, (m_Pos_x == 13 || m_Pos_x == 25 || m_Pos_x == 28 || m_Pos_x == 41) ? SEdgeHelperProperties::ActionWhiteButtonColor() : SEdgeHelperProperties::WindowColorMedium());
+	if(m_Pos_x == 16 || m_Pos_x == 31)
+	{
+		LeftZone.HSplitTop(5, nullptr, &LeftZone);
+		DoIconButton(&LeftZone, FontIcons::FONT_ICON_ANGLE_UP, SEdgeHelperProperties::ms_ArrowsSize, SEdgeHelperProperties::ActionWhiteButtonColor());
 	}
 	CenterZone.VSplitLeft(SEdgeHelperProperties::ms_ArrowsSize + ActionSpacing, &LeftZone, &CenterZone);
 	CenterZone.VSplitRight(SEdgeHelperProperties::ms_ArrowsSize + ActionSpacing, &CenterZone, &RightZone);
@@ -275,13 +256,13 @@ void CEdgeHelper::RenderEdgeHelperJumpInfo(CUIRect *pBase)
 	Ui()->DoLabel(&CenterZone, aBuf, 12, TEXTALIGN_MC);
 	TextRender()->TextColor(TextRender()->DefaultTextColor());
 
-	str_format(aBuf, sizeof(aBuf), "%s", (lower == std::numeric_limits<int>::min()) ? "-" : std::to_string(lower).c_str());
+	str_format(aBuf, sizeof(aBuf), "%s |", (lower == std::numeric_limits<int>::min()) ? "-" : std::to_string(lower).c_str());
 	if(m_Pos_x == lower || m_Pos_x == upper)
 		TextRender()->TextColor(SEdgeHelperProperties::ActionActiveButtonColor());
 	Ui()->DoLabel(&LeftZone, aBuf, 12, TEXTALIGN_MC);
 	TextRender()->TextColor(TextRender()->DefaultTextColor());
 
-	str_format(aBuf, sizeof(aBuf), "%s", (upper == std::numeric_limits<int>::max()) ? "-" : std::to_string(upper).c_str());
+	str_format(aBuf, sizeof(aBuf), "| %s", (upper == std::numeric_limits<int>::max()) ? "-" : std::to_string(upper).c_str());
 	if(m_Pos_x == upper)
 		TextRender()->TextColor(SEdgeHelperProperties::ActionActiveButtonColor());
 	Ui()->DoLabel(&RightZone, aBuf, 12, TEXTALIGN_MC);
