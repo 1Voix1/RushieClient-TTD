@@ -207,7 +207,7 @@ void CEdgeHelper::RenderEdgeHelperEdgeInfo(CUIRect *pBase)
 
 void CEdgeHelper::RenderEdgeHelperJumpInfo(CUIRect *pBase)
 {
-	CUIRect Label, LeftZone, RightZone, CenterZone;
+	CUIRect LeftZone, RightZone, CenterZone;
 	pBase->HSplitTop(SEdgeHelperProperties::ms_ItemSpacing, nullptr, pBase);
 	float ActionSpacing = (pBase->w - (2 * SEdgeHelperProperties::ms_ArrowsSize + 3 * SEdgeHelperProperties::ms_ArrowsSize)) / 4;
 	pBase->VSplitLeft(SEdgeHelperProperties::ms_ArrowsSize + ActionSpacing, &LeftZone, &CenterZone);
