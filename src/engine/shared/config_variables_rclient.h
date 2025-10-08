@@ -8,7 +8,6 @@
 MACRO_CONFIG_STR(PlayerClanNoDummy, player_clan_no_dummy, 12, "", CFGFLAG_CLIENT | CFGFLAG_SAVE, "Thats is clan when dummy not connected")
 MACRO_CONFIG_STR(PlayerClanWithDummy, player_clan_with_dummy, 12, "", CFGFLAG_CLIENT | CFGFLAG_SAVE, "Thats is clan when dummy connected")
 MACRO_CONFIG_INT(PlayerClanAutoChange, player_clan_auto_change, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Change clan when dummy connected")
-MACRO_CONFIG_INT(ClCopyNickWithDot, cl_copy_nick_with_dot, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Copy nick with dot or not")
 
 //Chat
 MACRO_CONFIG_INT(RiShowBlockedWordInConsole, ri_show_blocked_word_in_console, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show blocked word with regex in console")
@@ -40,7 +39,6 @@ MACRO_CONFIG_INT(RiPrevInpMousesens45degrees, ri_prev_inp_mousesens_45_degrees, 
 MACRO_CONFIG_INT(RiToggle45degrees, ri_toggle_45_degrees, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Toggle 45 degrees bind or not")
 MACRO_CONFIG_INT(RiPrevInpMousesensSmallsens, ri_prev_inp_mousesens_small_sens, 200, 1, 100000, CFGFLAG_SAVE | CFGFLAG_CLIENT, "Previous mouse sensitivity for small sens")
 MACRO_CONFIG_INT(RiToggleSmallSens, ri_toggle_small_sens, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Toggle small sens bind or not")
-MACRO_CONFIG_INT(RiNullMovement, ri_null_movement, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Holding both direction keys will cause you to move in the direction of the last one that was pressed")
 
 //Hud
 MACRO_CONFIG_INT(RiShowMiliSecondsTimer, ri_show_miliseconds_timer, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show milliseconds in game timer")
@@ -96,7 +94,6 @@ MACRO_CONFIG_STR(RiDiscordOfflineStatus, ri_discord_offline_status, 25, "Offline
 MACRO_CONFIG_INT(RiPlaySounds, ri_play_sounds, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Plays sound when do command")
 
 //Egde helper
-//MACRO_CONFIG_INT(RiToggleEdgeHelper, ri_toggle_edge_helper, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Toggle edge helper bind or not")
 MACRO_CONFIG_COL(RiEdgeInfoColorFreeze, ri_edge_info_color_freeze, 3432482669, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Freeze color in edge info")
 MACRO_CONFIG_COL(RiEdgeInfoColorKill, ri_edge_info_color_kill, 3422617525, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Kill color in edge info")
 MACRO_CONFIG_COL(RiEdgeInfoColorSafe, ri_edge_info_color_safe, 3428146599, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Safe color in edge info")

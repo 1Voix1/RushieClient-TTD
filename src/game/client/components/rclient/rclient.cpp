@@ -1578,14 +1578,7 @@ void CRClient::ConCopyPlayer(IConsole::IResult *pResult, void *pUserData)
 				pSelf->GameClient()->m_RClient.DummyFeetColorBeforeCopyPlayer = g_Config.m_ClDummyColorFeet;
 				pSelf->GameClient()->m_RClient.DummyCountryBeforeCopyPlayer = g_Config.m_ClDummyCountry;
 				str_copy(g_Config.m_ClDummySkin, ClientData.m_aSkinName, sizeof(g_Config.m_ClDummySkin));
-				if(g_Config.m_ClCopyNickWithDot)
-				{
-					str_format(g_Config.m_ClDummyName, sizeof(g_Config.m_ClDummyName), "%s.", ClientData.m_aName);
-				}
-				else
-				{
-					str_copy(g_Config.m_ClDummyName, ClientData.m_aName, sizeof(g_Config.m_ClDummyName));
-				}
+				str_copy(g_Config.m_ClDummyName, ClientData.m_aName, sizeof(g_Config.m_ClDummyName));
 				str_copy(g_Config.m_ClDummyClan, ClientData.m_aClan, sizeof(g_Config.m_ClDummyClan));
 				g_Config.m_ClDummyUseCustomColor = ClientData.m_UseCustomColor;
 				g_Config.m_ClDummyColorBody = ClientData.m_ColorBody;
@@ -1604,14 +1597,7 @@ void CRClient::ConCopyPlayer(IConsole::IResult *pResult, void *pUserData)
 				pSelf->GameClient()->m_RClient.PlayerFeetColorBeforeCopyPlayer = g_Config.m_ClPlayerColorFeet;
 				pSelf->GameClient()->m_RClient.PlayerCountryBeforeCopyPlayer = g_Config.m_PlayerCountry;
 				str_copy(g_Config.m_ClPlayerSkin, ClientData.m_aSkinName, sizeof(g_Config.m_ClPlayerSkin));
-				if(g_Config.m_ClCopyNickWithDot)
-				{
-					str_format(g_Config.m_PlayerName, sizeof(g_Config.m_PlayerName), "%s.", ClientData.m_aName);
-				}
-				else
-				{
-					str_copy(g_Config.m_PlayerName, ClientData.m_aName, sizeof(g_Config.m_PlayerName));
-				}
+				str_copy(g_Config.m_PlayerName, ClientData.m_aName, sizeof(g_Config.m_PlayerName));
 				str_copy(g_Config.m_PlayerClan, ClientData.m_aClan, sizeof(g_Config.m_PlayerClan));
 				g_Config.m_ClPlayerUseCustomColor = ClientData.m_UseCustomColor;
 				g_Config.m_ClPlayerColorBody = ClientData.m_ColorBody;

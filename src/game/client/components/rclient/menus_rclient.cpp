@@ -565,8 +565,6 @@ void CMenus::RenderSettingsRushieSettings(CUIRect MainView)
 		}
 	}
 	Column.HSplitTop(MarginSmall, nullptr, &Column);
-	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_ClCopyNickWithDot, RCLocalize("Copy nick with dot or not(when copy player)"), &g_Config.m_ClCopyNickWithDot, &Column, LineSize);
-	Column.HSplitTop(MarginSmall, nullptr, &Column);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_PlayerClanAutoChange, RCLocalize("Auto change clan when dummy connect"), &g_Config.m_PlayerClanAutoChange, &Column, LineSize);
 	Column.HSplitTop(MarginSmall, nullptr, &Column);
 	if(g_Config.m_PlayerClanAutoChange)
@@ -658,9 +656,6 @@ void CMenus::RenderSettingsRushieSettings(CUIRect MainView)
 	Column.HSplitTop(MarginBetweenSections, nullptr, &Column);
 	Column.HSplitTop(HeadlineHeight, &Label, &Column);
 	Ui()->DoLabel(&Label, RCLocalize("Movement"), HeadlineFontSize, TEXTALIGN_MC);
-	Column.HSplitTop(MarginSmall, nullptr, &Column);
-	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_RiNullMovement, RCLocalize("Null movement/ Snap tap"), &g_Config.m_RiNullMovement, &Column, LineSize);
-	GameClient()->m_Tooltips.DoToolTip(&g_Config.m_RiNullMovement, &Column, RCLocalize("To see that hold D and then hold A"));
 	Column.HSplitTop(MarginSmall, nullptr, &Column);
 
 	Column.HSplitTop(MarginBetweenSections, nullptr, &Column);

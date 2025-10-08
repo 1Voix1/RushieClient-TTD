@@ -152,9 +152,6 @@ Backup profile after copy
 Reset Find/Copy Skin/Player Chatbinds
 == Сбросить чатбинды для всех настроек "авто смены"
 
-Copy nick with dot or not(when copy player)
-== Копировать ник с точкой или нет(когда копируешь игрока)
-
 Auto change clan when dummy connect
 == Авто смена клана когда дамми подключен
 
@@ -200,9 +197,6 @@ Anim chat ms
 
 Movement
 == Передвижения
-
-Null movement/ Snap tap
-== Снап тап
 
 Scoreboard(Pulse)
 == Табло(Pulse)
@@ -420,9 +414,6 @@ Hook will change pos when some nearby
 
 Fire will change pos when some nearby
 == Хаммер будет менять позицию когда другая иконка рядом
-
-To see that hold D and then hold A
-== Чтобы увидеть это зажми D потом A
 
 if you move away from the tee, the indicator will become more transparent
 == Если ты отойдешь от тии индикатор станет более прозрачным
