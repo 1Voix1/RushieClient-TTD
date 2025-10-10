@@ -66,7 +66,7 @@ public:
 		DiscordCreateParams Params;
 		DiscordCreateParamsSetDefault(&Params);
 
-		Params.client_id = 1325361453988970527; // E-Client
+		Params.client_id = 1397526062799388803; // R-Client
 		Params.flags = EDiscordCreateFlags::DiscordCreateFlags_NoRequireDiscord;
 		Params.event_data = this;
 		Params.activity_events = &m_ActivityEvents;
@@ -84,7 +84,7 @@ public:
 		// which application to launch when joining activity
 		m_pActivityManager->register_command(m_pActivityManager, CONNECTLINK_DOUBLE_SLASH);
 		m_pActivityManager->register_steam(m_pActivityManager, 412220); // steam id
-		str_copy(m_Activity.details, "Initializing", sizeof(m_Activity.details));
+		str_copy(m_Activity.details, "Just joined", sizeof(m_Activity.details));
 
 		return false;
 	}
@@ -110,8 +110,8 @@ public:
 
 		mem_zero(&m_Activity, sizeof(DiscordActivity));
 
-		str_copy(m_Activity.assets.large_image, "tclient_logo", sizeof(m_Activity.assets.large_image));
-		str_copy(m_Activity.assets.large_text, "tclient.app", sizeof(m_Activity.assets.large_text));
+		str_copy(m_Activity.assets.large_image, "rclient_logo", sizeof(m_Activity.assets.large_image));
+		str_copy(m_Activity.assets.large_text, "rushie-client.ru", sizeof(m_Activity.assets.large_text));
 		str_copy(m_Activity.details, pDetail, sizeof(m_Activity.details));
 
 		m_Activity.timestamps.start = m_TimeStamp;
@@ -128,8 +128,8 @@ public:
 		mem_zero(&m_Activity, sizeof(DiscordActivity));
 
 		// E-Client
-		str_copy(m_Activity.assets.large_image, "tclient_logo", sizeof(m_Activity.assets.large_image));
-		str_copy(m_Activity.assets.large_text, "tclient.app", sizeof(m_Activity.assets.large_text));
+		str_copy(m_Activity.assets.large_image, "rclient_logo", sizeof(m_Activity.assets.large_image));
+		str_copy(m_Activity.assets.large_text, "rushie-client.ru", sizeof(m_Activity.assets.large_text));
 		m_ShowMap = ShowMap;
 		m_Activity.instance = true;
 		m_Activity.timestamps.start = m_TimeStamp;
