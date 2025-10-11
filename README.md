@@ -1,16 +1,43 @@
-### Rclient is fork of [TaterClient](https://github.com/sjrc6/TaterClient-ddnet)
+# Rushie Client
 
-Not guarenteed to be bug free, but I will try to fix them.
+**Rclient** is my personal, slightly chaotic, fork of **[TaterClient](https://github.com/sjrc6/TaterClient-ddnet)**
 
-### Links
+I've stole some features: the core functionality from [**TClient**](https://github.com/sjrc6/TaterClient-ddnet), Laser and scoreboard from [**Pulse Client**](https://github.com/PulseClient-ddnet/DDNetPulse), Discord rpc and ChatBubbles from [**Entity Client**](https://github.com/qxdFox/Entity-Client-DDNet), and some of mine functions.
 
-[Discord](https://discord.gg/wUFTVAGVGa)
-[Website](https://rushie-client.ru/)
+This client has a lot of code stolen from other great open-source clients. Feel free to use and reuse anything you find here!
 
-### Installation
+---
 
-* Download the latest [release](https://github.com/Rushie-Client/RushieClient-ddnet/releases)
+## Status & Bugs
 
-### Features
+I **can't guarantee everything is bug-free**, but I'm doing my best to fix things as they pop up. If you spot a problem or a crash, please tell me on Discord so I can look into it!
 
-That client add all features of TClient, some of Pulse Client and some features of RushieClient
+---
+
+## Installation
+
+Getting started is easy:
+
+1.  **Download the latest release** from the releases page: **[Releases](https://github.com/Rushie-Client/RushieClient-ddnet/releases)**.
+2.  Unzip that client in any folder
+3.  Run it and start play!
+
+---
+
+## Features
+
+* **[TClient Features:](https://github.com/sjrc6/TaterClient-ddnet)** Everything.
+* [**Pulse Client Features:**](https://github.com/PulseClient-ddnet/DDNetPulse) Laser Rtx and Scoreboard.
+* [**Entity Client Features:**](https://github.com/qxdFox/Entity-Client-DDNet) Discord rpc and ChatBubbles.
+* **Some mine functions:** Upgraded filter(but less perfomance), Tracker, Nameplate editor, Bindwheel in spec(stole from tclient), EdgeInfo.
+* **New Bugs!** (Hopefully not many).
+
+---
+
+## Community & Links
+
+* **Discord:** https://discord.gg/wUFTVAGVGa
+* **Website:** https://rushie-client.ru/
+* **Tater Client:** https://github.com/sjrc6/TaterClient-ddnet
+* **Entity Client:** https://github.com/qxdFox/Entity-Client-DDNet
+* **Pulse Client:** https://github.com/PulseClient-ddnet/DDNetPulse
