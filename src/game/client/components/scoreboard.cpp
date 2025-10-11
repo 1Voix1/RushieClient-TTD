@@ -811,7 +811,7 @@ void CScoreboard::RenderRecordingNotification(float x)
 }
 float CScoreboard::CalculatePopupHeight()
 {
-	int GeneralButtons = 9;
+	int GeneralButtons = 7;
 	int TeamButtons = 0;
 	{
 		bool LocalIsTarget = GameClient()->m_aLocalIds[g_Config.m_ClDummy] == m_Popup.m_PlayerId;
@@ -1107,31 +1107,11 @@ void CScoreboard::RenderGeneralActions(CUIRect *pBase)
 	pBase->HSplitTop(SPopupProperties::ms_ItemSpacing, nullptr, pBase);
 	pBase->HSplitTop(SPopupProperties::ms_ButtonHeight, &Button, pBase);
 	Button.Draw(Hovered(&Button) ? SPopupProperties::GeneralActiveButtonColor() : SPopupProperties::GeneralButtonColor(), IGraphics::CORNER_ALL, SPopupProperties::ms_Rounding);
-	Ui()->DoLabel(&Button, Localize("Copy Name"), SPopupProperties::ms_FontSize, TEXTALIGN_MC);
-	if(DoButtonLogic(&Button))
-	{
-		GameClient()->m_RClient.RiCopyNicknamePlayer(pPlayerName);
-	}
-
-	pBase->HSplitTop(SPopupProperties::ms_ItemSpacing, nullptr, pBase);
-	pBase->HSplitTop(SPopupProperties::ms_ButtonHeight, &Button, pBase);
-	Button.Draw(Hovered(&Button) ? SPopupProperties::GeneralActiveButtonColor() : SPopupProperties::GeneralButtonColor(), IGraphics::CORNER_ALL, SPopupProperties::ms_Rounding);
 	Ui()->DoLabel(&Button, Localize("Copy Skin"), SPopupProperties::ms_FontSize, TEXTALIGN_MC);
 	if(DoButtonLogic(&Button))
 	{
 		char aWhisperBuf[512];
 		str_format(aWhisperBuf, sizeof(aWhisperBuf), "copy_skin %s", pPlayerName);
-		Console()->ExecuteLine(aWhisperBuf);
-	}
-
-	pBase->HSplitTop(SPopupProperties::ms_ItemSpacing, nullptr, pBase);
-	pBase->HSplitTop(SPopupProperties::ms_ButtonHeight, &Button, pBase);
-	Button.Draw(Hovered(&Button) ? SPopupProperties::GeneralActiveButtonColor() : SPopupProperties::GeneralButtonColor(), IGraphics::CORNER_ALL, SPopupProperties::ms_Rounding);
-	Ui()->DoLabel(&Button, Localize("Copy Player"), SPopupProperties::ms_FontSize, TEXTALIGN_MC);
-	if(DoButtonLogic(&Button))
-	{
-		char aWhisperBuf[512];
-		str_format(aWhisperBuf, sizeof(aWhisperBuf), "copy_player %s", pPlayerName);
 		Console()->ExecuteLine(aWhisperBuf);
 	}
 

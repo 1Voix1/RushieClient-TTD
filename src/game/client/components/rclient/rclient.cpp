@@ -29,7 +29,6 @@ void CRClient::OnInit()
 void CRClient::OnConsoleInit()
 {
 	Console()->Register("ri_find_player_from_ddstats", "s[type]", CFGFLAG_CLIENT, ConFindPlayerFromDdstats, this, "Fetch player from DDstats");
-	Console()->Register("ri_copy_player_from_ddstats", "s[type]", CFGFLAG_CLIENT, ConCopyPlayerFromDdstats, this, "Fetch and copy player from DDstats");
 	Console()->Register("ri_find_skin_from_ddstats", "s[type]", CFGFLAG_CLIENT, ConFindSkinFromDdstats, this, "Fetch player's skin from DDstats");
 	Console()->Register("ri_copy_skin_from_ddstats", "s[type]", CFGFLAG_CLIENT, ConCopySkinFromDdstats, this, "Fetch and copy player's skin from DDstats");
 	Console()->Register("ri_backup_player_profile", "", CFGFLAG_CLIENT, ConBackupPlayerProfile, this, "Backup player profile");
@@ -46,7 +45,6 @@ void CRClient::OnConsoleInit()
 	Console()->Register("find_skin", "r[player]", CFGFLAG_CLIENT, ConFindSkin, this, "Find skin");
 	Console()->Register("copy_skin", "r[player]", CFGFLAG_CLIENT, ConCopySkin, this, "Copy skin");
 	Console()->Register("find_player", "r[player]", CFGFLAG_CLIENT, ConFindPlayer, this, "Find Player");
-	Console()->Register("copy_player", "r[player]", CFGFLAG_CLIENT, ConCopyPlayer, this, "Copy Player");
 	Console()->Register("copy_color", "r[player]", CFGFLAG_CLIENT, ConCopyColor, this, "Copy Color skin");
 	Console()->Register("tracker", "r[player]", CFGFLAG_CLIENT, ConTargetPlayerPos, this, "Track player pos");
 	Console()->Register("tracker_reset", "", CFGFLAG_CLIENT, ConTargetPlayerPosReset, this, "Reset tracker pos");
@@ -187,7 +185,6 @@ void CRClient::FinishRclientDDstatsProfile()
 		GameClient()->Echo("No that player");
 		// Reset all DDstats search flags if JSON parsing fails
 		RclientFindPlayerDDstatsSearch = 0;
-		RclientCopyPlayerDDstatsSearch = 0;
 		RclientFindSkinDDstatsSearch = 0;
 		RclientCopySkinDDstatsSearch = 0;
 		return;
@@ -235,64 +232,6 @@ void CRClient::FinishRclientDDstatsProfile()
 			else
 				GameClient()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "DDstats", "- Custom Color: 0");
 		}
-		if(RclientCopyPlayerDDstatsSearch == 1)
-		{
-			RclientCopyPlayerDDstatsSearch = 0;
-			str_format(aBuf, sizeof(aBuf), "- Nickname: %s", Nickname.u.string.ptr);
-			GameClient()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "DDstats", aBuf);
-			str_format(aBuf, sizeof(aBuf), "- Skin name: %s", Skin.u.string.ptr);
-			GameClient()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "DDstats", aBuf);
-			str_format(aBuf, sizeof(aBuf), "- Clan: %s", Clan.u.string.ptr);
-			GameClient()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "DDstats", aBuf);
-			str_format(aBuf, sizeof(aBuf), "- Country: %s", aCountry);
-			GameClient()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "DDstats", aBuf);
-			if(CustomColor)
-			{
-				GameClient()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "DDstats", "- Custom Color: 1");
-				str_format(aBuf, sizeof(aBuf), "- Body Color: %s", aBodycolor);
-				GameClient()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "DDstats", aBuf);
-				str_format(aBuf, sizeof(aBuf), "- Feet Color: %s", aFeetcolor);
-				GameClient()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "DDstats", aBuf);
-			}
-			else
-				GameClient()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "DDstats", "- Custom Color: 0");
-			if(g_Config.m_ClDummy == 1)
-			{
-				str_copy(DummySkinBeforeCopyPlayer, g_Config.m_ClDummySkin, sizeof(DummySkinBeforeCopyPlayer));
-				str_copy(DummyNameBeforeCopyPlayer, g_Config.m_ClDummyName, sizeof(DummyNameBeforeCopyPlayer));
-				str_copy(DummyClanBeforeCopyPlayer, g_Config.m_ClDummyClan, sizeof(DummyClanBeforeCopyPlayer));
-				DummyUseCustomColorBeforeCopyPlayer = g_Config.m_ClDummyUseCustomColor;
-				DummyBodyColorBeforeCopyPlayer = g_Config.m_ClDummyColorBody;
-				DummyFeetColorBeforeCopyPlayer = g_Config.m_ClDummyColorFeet;
-				DummyCountryBeforeCopyPlayer = g_Config.m_ClDummyCountry;
-				str_copy(g_Config.m_ClDummySkin, Skin.u.string.ptr, sizeof(g_Config.m_ClDummySkin));
-				str_copy(g_Config.m_ClDummyName, Nickname.u.string.ptr, sizeof(g_Config.m_ClDummyName));
-				str_copy(g_Config.m_ClDummyClan, Clan.u.string.ptr, sizeof(g_Config.m_ClDummyClan));
-				g_Config.m_ClDummyUseCustomColor = CustomColor;
-				g_Config.m_ClDummyColorBody = Skin_color_bodyint;
-				g_Config.m_ClDummyColorFeet = Skin_color_feetint;
-				g_Config.m_ClDummyCountry = Countryint;
-				GameClient()->SendDummyInfo(false);
-			}
-			if(g_Config.m_ClDummy == 0)
-			{
-				str_copy(PlayerSkinBeforeCopyPlayer, g_Config.m_ClPlayerSkin, sizeof(PlayerSkinBeforeCopyPlayer));
-				str_copy(PlayerNameBeforeCopyPlayer, g_Config.m_PlayerName, sizeof(PlayerNameBeforeCopyPlayer));
-				str_copy(PlayerClanBeforeCopyPlayer, g_Config.m_PlayerClan, sizeof(PlayerClanBeforeCopyPlayer));
-				PlayerUseCustomColorBeforeCopyPlayer = g_Config.m_ClPlayerUseCustomColor;
-				PlayerBodyColorBeforeCopyPlayer = g_Config.m_ClPlayerColorBody;
-				PlayerFeetColorBeforeCopyPlayer = g_Config.m_ClPlayerColorFeet;
-				PlayerCountryBeforeCopyPlayer = g_Config.m_PlayerCountry;
-				str_copy(g_Config.m_PlayerName, Nickname.u.string.ptr, sizeof(g_Config.m_PlayerName));
-				str_copy(g_Config.m_PlayerClan, Clan.u.string.ptr, sizeof(g_Config.m_PlayerClan));
-				str_copy(g_Config.m_ClPlayerSkin, Skin.u.string.ptr, sizeof(g_Config.m_ClPlayerSkin));
-				g_Config.m_PlayerCountry = Countryint;
-				g_Config.m_ClPlayerUseCustomColor = CustomColor;
-				g_Config.m_ClPlayerColorBody = Skin_color_bodyint;
-				g_Config.m_ClPlayerColorFeet = Skin_color_feetint;
-				GameClient()->SendInfo(false);
-			}
-		}
 		if(RclientFindSkinDDstatsSearch == 1)
 		{
 			RclientFindSkinDDstatsSearch = 0;
@@ -327,12 +266,9 @@ void CRClient::FinishRclientDDstatsProfile()
 			if(g_Config.m_ClDummy == 1)
 			{
 				str_copy(DummySkinBeforeCopyPlayer, g_Config.m_ClDummySkin, sizeof(DummySkinBeforeCopyPlayer));
-				str_copy(DummyNameBeforeCopyPlayer, g_Config.m_ClDummyName, sizeof(DummyNameBeforeCopyPlayer));
-				str_copy(DummyClanBeforeCopyPlayer, g_Config.m_ClDummyClan, sizeof(DummyClanBeforeCopyPlayer));
 				DummyUseCustomColorBeforeCopyPlayer = g_Config.m_ClDummyUseCustomColor;
 				DummyBodyColorBeforeCopyPlayer = g_Config.m_ClDummyColorBody;
 				DummyFeetColorBeforeCopyPlayer = g_Config.m_ClDummyColorFeet;
-				DummyCountryBeforeCopyPlayer = g_Config.m_ClDummyCountry;
 				str_copy(g_Config.m_ClDummySkin, Skin.u.string.ptr, sizeof(g_Config.m_ClDummySkin));
 				g_Config.m_ClDummyUseCustomColor = CustomColor;
 				g_Config.m_ClDummyColorBody = Skin_color_bodyint;
@@ -342,12 +278,9 @@ void CRClient::FinishRclientDDstatsProfile()
 			if(g_Config.m_ClDummy == 0)
 			{
 				str_copy(PlayerSkinBeforeCopyPlayer, g_Config.m_ClPlayerSkin, sizeof(PlayerSkinBeforeCopyPlayer));
-				str_copy(PlayerNameBeforeCopyPlayer, g_Config.m_PlayerName, sizeof(PlayerNameBeforeCopyPlayer));
-				str_copy(PlayerClanBeforeCopyPlayer, g_Config.m_PlayerClan, sizeof(PlayerClanBeforeCopyPlayer));
 				PlayerUseCustomColorBeforeCopyPlayer = g_Config.m_ClPlayerUseCustomColor;
 				PlayerBodyColorBeforeCopyPlayer = g_Config.m_ClPlayerColorBody;
 				PlayerFeetColorBeforeCopyPlayer = g_Config.m_ClPlayerColorFeet;
-				PlayerCountryBeforeCopyPlayer = g_Config.m_PlayerCountry;
 				str_copy(g_Config.m_ClPlayerSkin, Skin.u.string.ptr, sizeof(g_Config.m_ClPlayerSkin));
 				g_Config.m_ClPlayerUseCustomColor = CustomColor;
 				g_Config.m_ClPlayerColorBody = Skin_color_bodyint;
@@ -374,17 +307,6 @@ void CRClient::ConFindPlayerFromDdstats(IConsole::IResult *pResult, void *pUserD
 	str_copy(aInput, pInput, sizeof(aInput));
 	str_utf8_trim_right(aInput);
 	pThis->RclientFindPlayerDDstatsSearch = 1;
-	str_copy(pThis->RclientSearchingNickname, aInput, sizeof(aInput));
-	pThis->FetchRclientDDstatsProfile();
-}
-void CRClient::ConCopyPlayerFromDdstats(IConsole::IResult *pResult, void *pUserData)
-{
-	CRClient *pThis = static_cast<CRClient *>(pUserData);
-	const char *pInput = pResult->GetString(0);
-	char aInput[256];
-	str_copy(aInput, pInput, sizeof(aInput));
-	str_utf8_trim_right(aInput);
-	pThis->RclientCopyPlayerDDstatsSearch = 1;
 	str_copy(pThis->RclientSearchingNickname, aInput, sizeof(aInput));
 	pThis->FetchRclientDDstatsProfile();
 }
@@ -489,15 +411,12 @@ void CRClient::ConBackupPlayerProfile(IConsole::IResult *pResult, void *pUserDat
 	CRClient *pSelf = (CRClient *)pUserData;
 	if(g_Config.m_ClDummy == 1)
 	{
-		if(str_length(pSelf->DummySkinBeforeCopyPlayer) > 0 || str_length(pSelf->DummyNameBeforeCopyPlayer) > 0)
+		if(str_length(pSelf->DummySkinBeforeCopyPlayer) > 0)
 		{
 			str_copy(g_Config.m_ClDummySkin, pSelf->DummySkinBeforeCopyPlayer, sizeof(g_Config.m_ClDummySkin));
-			str_copy(g_Config.m_ClDummyName, pSelf->DummyNameBeforeCopyPlayer, sizeof(g_Config.m_ClDummyName));
-			str_copy(g_Config.m_ClDummyClan, pSelf->DummyClanBeforeCopyPlayer, sizeof(g_Config.m_ClDummyClan));
 			g_Config.m_ClDummyUseCustomColor = pSelf->DummyUseCustomColorBeforeCopyPlayer;
 			g_Config.m_ClDummyColorBody = pSelf->DummyBodyColorBeforeCopyPlayer;
 			g_Config.m_ClDummyColorFeet = pSelf->DummyFeetColorBeforeCopyPlayer;
-			g_Config.m_ClDummyCountry = pSelf->DummyCountryBeforeCopyPlayer;
 			pSelf->GameClient()->SendDummyInfo(false);
 		}
 		else
@@ -507,15 +426,12 @@ void CRClient::ConBackupPlayerProfile(IConsole::IResult *pResult, void *pUserDat
 	}
 	if(g_Config.m_ClDummy == 0)
 	{
-		if(str_length(pSelf->PlayerSkinBeforeCopyPlayer) > 0 || str_length(pSelf->PlayerNameBeforeCopyPlayer) > 0)
+		if(str_length(pSelf->PlayerSkinBeforeCopyPlayer) > 0)
 		{
 			str_copy(g_Config.m_ClPlayerSkin, pSelf->PlayerSkinBeforeCopyPlayer, sizeof(g_Config.m_ClPlayerSkin));
-			str_copy(g_Config.m_PlayerName, pSelf->PlayerNameBeforeCopyPlayer, sizeof(g_Config.m_PlayerName));
-			str_copy(g_Config.m_PlayerClan, pSelf->PlayerClanBeforeCopyPlayer, sizeof(g_Config.m_PlayerClan));
 			g_Config.m_ClPlayerUseCustomColor = pSelf->PlayerUseCustomColorBeforeCopyPlayer;
 			g_Config.m_ClPlayerColorBody = pSelf->PlayerBodyColorBeforeCopyPlayer;
 			g_Config.m_ClPlayerColorFeet = pSelf->PlayerFeetColorBeforeCopyPlayer;
-			g_Config.m_PlayerCountry = pSelf->PlayerCountryBeforeCopyPlayer;
 			pSelf->GameClient()->SendInfo(false);
 		}
 		else
@@ -973,23 +889,6 @@ void CRClient::ConToggleDeepfly(IConsole::IResult *pResult, void *pUserData)
 		pSelf->GameClient()->Echo("[[green]] Deepfly on");
 		str_copy(pSelf->m_Oldmouse1Bind, CurBind, sizeof(CurBind));
 		pSelf->GameClient()->m_Binds.Bind(291, "+fire; +toggle cl_dummy_hammer 1 0", false, 0);
-	}
-}
-
-//Copy nickname
-void CRClient::RiCopyNicknamePlayer(const char *pNickname)
-{
-	if(g_Config.m_ClDummy == 0)
-	{
-		str_copy(PlayerNameBeforeCopyPlayer, g_Config.m_PlayerName, sizeof(PlayerNameBeforeCopyPlayer));
-		str_copy(g_Config.m_PlayerName, pNickname, sizeof(g_Config.m_PlayerName));
-		GameClient()->SendInfo(false);
-	}
-	if(g_Config.m_ClDummy == 1)
-	{
-		str_copy(DummyNameBeforeCopyPlayer, g_Config.m_PlayerName, sizeof(DummyNameBeforeCopyPlayer));
-		str_copy(g_Config.m_ClDummyName, pNickname, sizeof(g_Config.m_ClDummyName));
-		GameClient()->SendDummyInfo(false);
 	}
 }
 
@@ -1463,12 +1362,9 @@ void CRClient::ConCopySkin(IConsole::IResult *pResult, void *pUserData)
 			if(g_Config.m_ClDummy == 1)
 			{
 				str_copy(pSelf->GameClient()->m_RClient.DummySkinBeforeCopyPlayer, g_Config.m_ClDummySkin, sizeof(pSelf->GameClient()->m_RClient.DummySkinBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.DummyNameBeforeCopyPlayer, g_Config.m_ClDummyName, sizeof(pSelf->GameClient()->m_RClient.DummyNameBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.DummyClanBeforeCopyPlayer, g_Config.m_ClDummyClan, sizeof(pSelf->GameClient()->m_RClient.DummyClanBeforeCopyPlayer));
 				pSelf->GameClient()->m_RClient.DummyUseCustomColorBeforeCopyPlayer = g_Config.m_ClDummyUseCustomColor;
 				pSelf->GameClient()->m_RClient.DummyBodyColorBeforeCopyPlayer = g_Config.m_ClDummyColorBody;
 				pSelf->GameClient()->m_RClient.DummyFeetColorBeforeCopyPlayer = g_Config.m_ClDummyColorFeet;
-				pSelf->GameClient()->m_RClient.DummyCountryBeforeCopyPlayer = g_Config.m_ClDummyCountry;
 				str_copy(g_Config.m_ClDummySkin, ClientData.m_aSkinName, sizeof(g_Config.m_ClDummySkin));
 				g_Config.m_ClDummyUseCustomColor = ClientData.m_UseCustomColor;
 				g_Config.m_ClDummyColorBody = ClientData.m_ColorBody;
@@ -1478,12 +1374,9 @@ void CRClient::ConCopySkin(IConsole::IResult *pResult, void *pUserData)
 			if(g_Config.m_ClDummy == 0)
 			{
 				str_copy(pSelf->GameClient()->m_RClient.PlayerSkinBeforeCopyPlayer, g_Config.m_ClPlayerSkin, sizeof(pSelf->GameClient()->m_RClient.PlayerSkinBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.PlayerNameBeforeCopyPlayer, g_Config.m_PlayerName, sizeof(pSelf->GameClient()->m_RClient.PlayerNameBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.PlayerClanBeforeCopyPlayer, g_Config.m_PlayerClan, sizeof(pSelf->GameClient()->m_RClient.PlayerClanBeforeCopyPlayer));
 				pSelf->GameClient()->m_RClient.PlayerUseCustomColorBeforeCopyPlayer = g_Config.m_ClPlayerUseCustomColor;
 				pSelf->GameClient()->m_RClient.PlayerBodyColorBeforeCopyPlayer = g_Config.m_ClPlayerColorBody;
 				pSelf->GameClient()->m_RClient.PlayerFeetColorBeforeCopyPlayer = g_Config.m_ClPlayerColorFeet;
-				pSelf->GameClient()->m_RClient.PlayerCountryBeforeCopyPlayer = g_Config.m_PlayerCountry;
 				str_copy(g_Config.m_ClPlayerSkin, ClientData.m_aSkinName, sizeof(g_Config.m_ClPlayerSkin));
 				g_Config.m_ClPlayerUseCustomColor = ClientData.m_UseCustomColor;
 				g_Config.m_ClPlayerColorBody = ClientData.m_ColorBody;
@@ -1494,121 +1387,6 @@ void CRClient::ConCopySkin(IConsole::IResult *pResult, void *pUserData)
 		else
 		{
 			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", "No skin found for this client");
-		}
-	}
-	else
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", "Invalid client ID");
-		pSelf->GameClient()->Echo("No that player on server");
-	}
-}
-
-void CRClient::ConCopyPlayer(IConsole::IResult *pResult, void *pUserData)
-{
-	CRClient *pSelf = (CRClient *)pUserData;
-	const char *pInput = pResult->GetString(0);
-	char aInput[256];
-	str_copy(aInput, pInput, sizeof(aInput));
-	str_utf8_trim_right(aInput);
-	int ClientID = -1;
-	// First try to find by name
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if(str_comp_nocase(pSelf->GameClient()->m_aClients[i].m_aName, aInput) == 0)
-		{
-			ClientID = i;
-			break;
-		}
-	}
-
-	// If not found by name, try to use input as ID
-	if(ClientID == -1)
-	{
-		ClientID = str_toint(aInput);
-	}
-
-	// Validate client ID
-	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
-	{
-		const CGameClient::CClientData &ClientData = pSelf->GameClient()->m_aClients[ClientID];
-		if(ClientData.m_aSkinName[0])
-		{
-			char aBuf[512];
-
-			// Базовая информация о скине
-			str_format(aBuf, sizeof(aBuf), "Skin info for client %d:\n", ClientID);
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
-
-			// Название скина
-			str_format(aBuf, sizeof(aBuf), "- Skin name: %s", ClientData.m_aSkinName);
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
-
-			// Цвет тела
-			str_format(aBuf, sizeof(aBuf), "- Body Color: %d",
-				ClientData.m_ColorBody);
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
-
-			// Цвет ног
-			str_format(aBuf, sizeof(aBuf), "- Feet Color: %d",
-				ClientData.m_ColorFeet);
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
-
-			// Включены ли кастом цвет
-			str_format(aBuf, sizeof(aBuf), "- Custom Color: %d",
-				ClientData.m_UseCustomColor);
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
-
-			str_format(aBuf, sizeof(aBuf), "- Name: %s", ClientData.m_aName);
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
-
-			str_format(aBuf, sizeof(aBuf), "- Clan: %s", ClientData.m_aClan);
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
-
-			str_format(aBuf, sizeof(aBuf), "- Country: %d",
-				ClientData.m_Country);
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
-
-			if(g_Config.m_ClDummy == 1)
-			{
-				str_copy(pSelf->GameClient()->m_RClient.DummySkinBeforeCopyPlayer, g_Config.m_ClDummySkin, sizeof(pSelf->GameClient()->m_RClient.DummySkinBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.DummyNameBeforeCopyPlayer, g_Config.m_ClDummyName, sizeof(pSelf->GameClient()->m_RClient.DummyNameBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.DummyClanBeforeCopyPlayer, g_Config.m_ClDummyClan, sizeof(pSelf->GameClient()->m_RClient.DummyClanBeforeCopyPlayer));
-				pSelf->GameClient()->m_RClient.DummyUseCustomColorBeforeCopyPlayer = g_Config.m_ClDummyUseCustomColor;
-				pSelf->GameClient()->m_RClient.DummyBodyColorBeforeCopyPlayer = g_Config.m_ClDummyColorBody;
-				pSelf->GameClient()->m_RClient.DummyFeetColorBeforeCopyPlayer = g_Config.m_ClDummyColorFeet;
-				pSelf->GameClient()->m_RClient.DummyCountryBeforeCopyPlayer = g_Config.m_ClDummyCountry;
-				str_copy(g_Config.m_ClDummySkin, ClientData.m_aSkinName, sizeof(g_Config.m_ClDummySkin));
-				str_copy(g_Config.m_ClDummyName, ClientData.m_aName, sizeof(g_Config.m_ClDummyName));
-				str_copy(g_Config.m_ClDummyClan, ClientData.m_aClan, sizeof(g_Config.m_ClDummyClan));
-				g_Config.m_ClDummyUseCustomColor = ClientData.m_UseCustomColor;
-				g_Config.m_ClDummyColorBody = ClientData.m_ColorBody;
-				g_Config.m_ClDummyColorFeet = ClientData.m_ColorFeet;
-				g_Config.m_ClDummyCountry = ClientData.m_Country;
-
-				pSelf->GameClient()->SendDummyInfo(false);
-			}
-			if(g_Config.m_ClDummy == 0)
-			{
-				str_copy(pSelf->GameClient()->m_RClient.PlayerSkinBeforeCopyPlayer, g_Config.m_ClPlayerSkin, sizeof(pSelf->GameClient()->m_RClient.PlayerSkinBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.PlayerNameBeforeCopyPlayer, g_Config.m_PlayerName, sizeof(pSelf->GameClient()->m_RClient.PlayerNameBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.PlayerClanBeforeCopyPlayer, g_Config.m_PlayerClan, sizeof(pSelf->GameClient()->m_RClient.PlayerClanBeforeCopyPlayer));
-				pSelf->GameClient()->m_RClient.PlayerUseCustomColorBeforeCopyPlayer = g_Config.m_ClPlayerUseCustomColor;
-				pSelf->GameClient()->m_RClient.PlayerBodyColorBeforeCopyPlayer = g_Config.m_ClPlayerColorBody;
-				pSelf->GameClient()->m_RClient.PlayerFeetColorBeforeCopyPlayer = g_Config.m_ClPlayerColorFeet;
-				pSelf->GameClient()->m_RClient.PlayerCountryBeforeCopyPlayer = g_Config.m_PlayerCountry;
-				str_copy(g_Config.m_ClPlayerSkin, ClientData.m_aSkinName, sizeof(g_Config.m_ClPlayerSkin));
-				str_copy(g_Config.m_PlayerName, ClientData.m_aName, sizeof(g_Config.m_PlayerName));
-				str_copy(g_Config.m_PlayerClan, ClientData.m_aClan, sizeof(g_Config.m_PlayerClan));
-				g_Config.m_ClPlayerUseCustomColor = ClientData.m_UseCustomColor;
-				g_Config.m_ClPlayerColorBody = ClientData.m_ColorBody;
-				g_Config.m_ClPlayerColorFeet = ClientData.m_ColorFeet;
-				g_Config.m_PlayerCountry = ClientData.m_Country;
-				pSelf->GameClient()->SendInfo(false);
-			}
-		}
-		else
-		{
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", "No player found for this client");
 		}
 	}
 	else
@@ -1752,12 +1530,9 @@ void CRClient::ConCopyColor(IConsole::IResult *pResult, void *pUserData)
 			if(g_Config.m_ClDummy == 1)
 			{
 				str_copy(pSelf->GameClient()->m_RClient.DummySkinBeforeCopyPlayer, g_Config.m_ClDummySkin, sizeof(pSelf->GameClient()->m_RClient.DummySkinBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.DummyNameBeforeCopyPlayer, g_Config.m_ClDummyName, sizeof(pSelf->GameClient()->m_RClient.DummyNameBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.DummyClanBeforeCopyPlayer, g_Config.m_ClDummyClan, sizeof(pSelf->GameClient()->m_RClient.DummyClanBeforeCopyPlayer));
 				pSelf->GameClient()->m_RClient.DummyUseCustomColorBeforeCopyPlayer = g_Config.m_ClDummyUseCustomColor;
 				pSelf->GameClient()->m_RClient.DummyBodyColorBeforeCopyPlayer = g_Config.m_ClDummyColorBody;
 				pSelf->GameClient()->m_RClient.DummyFeetColorBeforeCopyPlayer = g_Config.m_ClDummyColorFeet;
-				pSelf->GameClient()->m_RClient.DummyCountryBeforeCopyPlayer = g_Config.m_ClDummyCountry;
 				g_Config.m_ClDummyUseCustomColor = ClientData.m_UseCustomColor;
 				g_Config.m_ClDummyColorBody = ClientData.m_ColorBody;
 				g_Config.m_ClDummyColorFeet = ClientData.m_ColorFeet;
@@ -1766,12 +1541,9 @@ void CRClient::ConCopyColor(IConsole::IResult *pResult, void *pUserData)
 			if(g_Config.m_ClDummy == 0)
 			{
 				str_copy(pSelf->GameClient()->m_RClient.PlayerSkinBeforeCopyPlayer, g_Config.m_ClPlayerSkin, sizeof(pSelf->GameClient()->m_RClient.PlayerSkinBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.PlayerNameBeforeCopyPlayer, g_Config.m_PlayerName, sizeof(pSelf->GameClient()->m_RClient.PlayerNameBeforeCopyPlayer));
-				str_copy(pSelf->GameClient()->m_RClient.PlayerClanBeforeCopyPlayer, g_Config.m_PlayerClan, sizeof(pSelf->GameClient()->m_RClient.PlayerClanBeforeCopyPlayer));
 				pSelf->GameClient()->m_RClient.PlayerUseCustomColorBeforeCopyPlayer = g_Config.m_ClPlayerUseCustomColor;
 				pSelf->GameClient()->m_RClient.PlayerBodyColorBeforeCopyPlayer = g_Config.m_ClPlayerColorBody;
 				pSelf->GameClient()->m_RClient.PlayerFeetColorBeforeCopyPlayer = g_Config.m_ClPlayerColorFeet;
-				pSelf->GameClient()->m_RClient.PlayerCountryBeforeCopyPlayer = g_Config.m_PlayerCountry;
 				g_Config.m_ClPlayerUseCustomColor = ClientData.m_UseCustomColor;
 				g_Config.m_ClPlayerColorBody = ClientData.m_ColorBody;
 				g_Config.m_ClPlayerColorFeet = ClientData.m_ColorFeet;

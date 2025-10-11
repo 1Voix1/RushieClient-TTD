@@ -9,7 +9,6 @@
 class CRClient : public CComponent
 {
 	static void ConFindPlayerFromDdstats(IConsole::IResult *pResult, void *pUserData);
-	static void ConCopyPlayerFromDdstats(IConsole::IResult *pResult, void *pUserData);
 	static void ConFindSkinFromDdstats(IConsole::IResult *pResult, void *pUserData);
 	static void ConCopySkinFromDdstats(IConsole::IResult *pResult, void *pUserData);
 	static void ConBackupPlayerProfile(IConsole::IResult *pResult, void *pUserData);
@@ -52,12 +51,10 @@ class CRClient : public CComponent
 	int RclientFindSkinDDstatsSearch = 0;
 	int RclientCopySkinDDstatsSearch = 0;
 	int RclientFindPlayerDDstatsSearch = 0;
-	int RclientCopyPlayerDDstatsSearch = 0;
 
 	static void ConFindSkin(IConsole::IResult *pResult, void *pUserData);
 	static void ConCopySkin(IConsole::IResult *pResult, void *pUserData);
 	static void ConFindPlayer(IConsole::IResult *pResult, void *pUserData);
-	static void ConCopyPlayer(IConsole::IResult *pResult, void *pUserData);
 	static void ConCopyColor(IConsole::IResult *pResult, void *pUserData);
 	static void ConTargetPlayerPos(IConsole::IResult *pResult, void *pUserData);
 	static void ConTargetPlayerPosReset(IConsole::IResult *pResult, void *pUserData);
@@ -105,20 +102,14 @@ public:
 	char MapForSearchMapInfo[128];
 
 	//Back player profile after copy player
-	char PlayerNameBeforeCopyPlayer[32];
 	char PlayerSkinBeforeCopyPlayer[42];
-	char PlayerClanBeforeCopyPlayer[24];
 	int PlayerUseCustomColorBeforeCopyPlayer = 0;
 	int PlayerBodyColorBeforeCopyPlayer = 0;
 	int PlayerFeetColorBeforeCopyPlayer = 0;
-	int PlayerCountryBeforeCopyPlayer = 0;
-	char DummyNameBeforeCopyPlayer[32];
 	char DummySkinBeforeCopyPlayer[42];
-	char DummyClanBeforeCopyPlayer[24];
 	int DummyUseCustomColorBeforeCopyPlayer = 0;
 	int DummyBodyColorBeforeCopyPlayer = 0;
 	int DummyFeetColorBeforeCopyPlayer = 0;
-	int DummyCountryBeforeCopyPlayer = 0;
 
 	//Tracker
 	int TargetPositionId[MAX_CLIENTS];
@@ -138,9 +129,6 @@ public:
 	void FetchFindHours(const char *pNickname, const char *pWriteinchat);
 	void FinishFindHours();
 	void ResetFindHours();
-
-	// Copy nickname
-	void RiCopyNicknamePlayer(const char *pNickname);
 
 	// Regex
 	static std::vector<std::string> SplitRegex(const char *aboba);

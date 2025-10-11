@@ -122,10 +122,6 @@ Find player
 == Найти игрока
 
 [Chatbinds]
-Copy player
-== Скопировать игрока
-
-[Chatbinds]
 Copy color
 == Скопировать цвет игрока
 
@@ -142,14 +138,10 @@ Find player from ddstats
 == Найти игрока из базы DDStats
 
 [Chatbinds]
-Copy player from ddstats
-== Скопировать игрока из базы DDStats
-
-[Chatbinds]
 Backup profile after copy
 == Бекап профиля после копирования
 
-Reset Find/Copy Skin/Player Chatbinds
+Reset Find/Copy Skin Chatbinds
 == Сбросить чатбинды для всех настроек "авто смены"
 
 Auto change clan when dummy connect

@@ -92,12 +92,10 @@ static CBindChat::CBindRclient s_aDefaultBindChatRclientFindSkin[] = {
 	{"Find skin", ".findskin", "find_skin"},
 	{"Copy skin", ".copyskin", "copy_skin"},
 	{"Find player", ".findplayer", "find_player"},
-	{"Copy player", ".copyplayer", "copy_player"},
 	{"Copy color", ".copycolor", "copy_color"},
 	{"Find skin from ddstats", ".findskinddstats", "ri_find_skin_from_ddstats"},
 	{"Copy skin from ddstats", ".copyskinddstats", "ri_copy_skin_from_ddstats"},
 	{"Find player from ddstats", ".findplayerddstats", "ri_find_player_from_ddstats"},
-	{"Copy player from ddstats", ".copyplayerddstats", "ri_copy_player_from_ddstats"},
 	{"Backup profile after copy", ".backupprofile", "ri_backup_player_profile"},
 };
 static CBindChat::CBindRclient s_aDefaultBindChatRclientChat[] = {
