@@ -1392,7 +1392,88 @@ void CMenus::RenderSettingsRushieRCON(CUIRect MainView)
 
 void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
 {
+	CUIRect Label;
+	CUIRect Button;
 
+	MainView.HSplitTop(HeadlineHeight, &Label, &MainView);
+	Ui()->DoLabel(&Label, RCLocalize("TTD Settings"), HeadlineFontSize, TEXTALIGN_ML);
+	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
+
+	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_RiEnableLogsTTD, RCLocalize("Enable TTD Logs"), &g_Config.m_RiEnableLogsTTD, &MainView, LineSize);
+
+	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
+	MainView.HSplitTop(LineSize, &Button, &MainView);
+	static CButtonContainer s_CopyLogsButton;
+	if(DoButton_Menu(&s_CopyLogsButton, RCLocalize("Copy Logs"), 0, &Button))
+		CopyTTDLogs();
+
+	MainView.HSplitTop(HeadlineHeight, &Label, &MainView);
+	Ui()->DoLabel(&Label, RCLocalize("TTD Logs"), HeadlineFontSize, TEXTALIGN_ML);
+	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
+
+	CUIRect LogView = MainView;
+	LogView.Draw(ColorRGBA(0.0f, 0.0f, 0.0f, 0.15f), IGraphics::CORNER_ALL, 5.0f);
+	LogView.Margin(5.0f, &LogView);
+
+	static CScrollRegion s_ScrollRegion;
+	vec2 ScrollOffset(0.0f, 0.0f);
+	CScrollRegionParams ScrollParams;
+	ScrollParams.m_ScrollUnit = 100.0f;
+	s_ScrollRegion.Begin(&LogView, &ScrollOffset, &ScrollParams);
+	LogView.y += ScrollOffset.y;
+
+	const char *pLogFile = GameClient()->m_Chat.GetLogFilename();
+	if(pLogFile && pLogFile[0] != '\0')
+	{
+		IOHANDLE File = Storage()->OpenFile(pLogFile, IOFLAG_READ, IStorage::TYPE_SAVE);
+		if(File)
+		{
+			char aLine[1024];
+			CLineReader Reader;
+			Reader.OpenFile(File);
+			float y = LogView.y;
+			while(const char *pLine = Reader.Get())
+			{
+				CUIRect LineRect = {LogView.x, y, LogView.w, 12.0f};
+				if(s_ScrollRegion.AddRect(LineRect))
+				{
+					Ui()->DoLabel(&LineRect, pLine, 10.0f, TEXTALIGN_ML);
+				}
+				y += 12.0f;
+			}
+			io_close(File);
+		}
+		else
+		{
+			Ui()->DoLabel(&LogView, RCLocalize("No logs for current map yet."), 12.0f, TEXTALIGN_MC);
+		}
+	}
+	else
+	{
+		Ui()->DoLabel(&LogView, RCLocalize("No logs or Not connected to a map or logging is disabled."), 12.0f, TEXTALIGN_MC);
+	}
+
+	s_ScrollRegion.End();
+}
+
+void CMenus::CopyTTDLogs()
+{
+	const char *pLogFile = GameClient()->m_Chat.GetLogFilename();
+	if(pLogFile && pLogFile[0] != '\0')
+	{
+		IOHANDLE File = Storage()->OpenFile(pLogFile, IOFLAG_READ, IStorage::TYPE_SAVE);
+		if(File)
+		{
+			long long FileSize = io_length(File);
+			char *pLogContent = (char *)malloc(FileSize + 1);
+			io_read(File, pLogContent, FileSize);
+			pLogContent[FileSize] = '\0';
+			io_close(File);
+			Input()->SetClipboardText(pLogContent);
+			free(pLogContent);
+			GameClient()->Echo(RCLocalize("TTD logs copied to clipboard."));
+		}
+	}
 }
 
 bool CMenus::DoFloatScrollBar(const void *pId, int *pOption, const CUIRect *pRect, const char *pStr, int Min, int Max, int DivideBy, const IScrollbarScale *pScale, unsigned Flags, const char *pSuffix)

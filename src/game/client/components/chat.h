@@ -155,6 +155,7 @@ class CChat : public CComponent
 	// TTD
 	char m_aLogFilename[IO_MAX_PATH_LENGTH];
 	char m_aLastMap[64];
+	char m_aLastServerAddress[256];
 
 	bool m_ServerSupportsCommandInfo;
 
@@ -232,6 +233,7 @@ public:
 	void SendChatQueued(const char *pLine);
 
 	//Rclient
+	const char *GetLogFilename() const { return m_aLogFilename; }
 	bool LineHighlighted(int ClientId, const char *pLine);
 	const char *FilterText(const char *pMessage, int ClientId = -2, bool IsChat = false);
 	void TTDChatChecker(const char *pMessage, int ClientId);
