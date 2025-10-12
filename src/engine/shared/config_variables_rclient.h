@@ -97,3 +97,5 @@ MACRO_CONFIG_INT(RiPlaySounds, ri_play_sounds, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG
 MACRO_CONFIG_COL(RiEdgeInfoColorFreeze, ri_edge_info_color_freeze, 3432482669, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Freeze color in edge info")
 MACRO_CONFIG_COL(RiEdgeInfoColorKill, ri_edge_info_color_kill, 3422617525, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Kill color in edge info")
 MACRO_CONFIG_COL(RiEdgeInfoColorSafe, ri_edge_info_color_safe, 3428146599, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Safe color in edge info")
+MACRO_CONFIG_INT(RiEdgeInfoCords, ri_edge_info_cords, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show upper panel of edge info")
+MACRO_CONFIG_INT(RiEdgeInfoJump, ri_edge_info_jump, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show lower panel of edge info")
