@@ -196,7 +196,6 @@ public:
 	void OnStateChange(int NewState, int OldState) override;
 	void OnRender() override;
 	void OnPrepareLines(float y);
-	void Reset();
 	void Reset() override;
 	void OnRelease() override;
 	void OnMessage(int MsgType, void *pRawMsg) override;

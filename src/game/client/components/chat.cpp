@@ -1838,17 +1838,11 @@ void CChat::TTDChatChecker(const char *pMessage, int ClientId){
 	if(ClientId == SERVER_MSG)
 	{
 		const char *pMapName = Client()->GetCurrentMap();
-		if(!pMapName || pMapName[0] == '\0')
-			return;
 		if(!pMapName || pMapName[0] == '\0' || (m_aLastMap[0] && str_comp(m_aLastMap, pMapName) != 0))
 		{
 			m_aLogFilename[0] = '\0';
 		}
 
-		char aFilename[IO_MAX_PATH_LENGTH];
-		str_format(aFilename, sizeof(aFilename), "logs/%s.log", pMapName);
-
-		IOHANDLE File = Storage()->OpenFile(aFilename, IOFLAG_APPEND, IStorage::TYPE_SAVE);
 		if(m_aLogFilename[0] == '\0')
 		{
 			if(!pMapName || pMapName[0] == '\0')
@@ -1856,7 +1850,7 @@ void CChat::TTDChatChecker(const char *pMessage, int ClientId){
 			Storage()->CreateFolder("logs", IStorage::TYPE_SAVE);
 			char aTimestamp[20];
 			str_timestamp(aTimestamp, sizeof(aTimestamp));
-			str_format(m_aLogFilename, sizeof(m_aLogFilename), "logs/%s_%s.txt", pMapName, aTimestamp);
+			str_format(m_aLogFilename, sizeof(m_aLogFilename), "logs/%s_%s.log", pMapName, aTimestamp);
 			str_copy(m_aLastMap, pMapName, sizeof(m_aLastMap));
 		}
 		IOHANDLE File = Storage()->OpenFile(m_aLogFilename, IOFLAG_APPEND, IStorage::TYPE_SAVE);
