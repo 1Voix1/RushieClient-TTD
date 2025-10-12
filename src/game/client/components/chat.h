@@ -154,7 +154,7 @@ class CChat : public CComponent
 	bool m_EditingNewLine;
 	// TTD
 	char m_aLogFilename[IO_MAX_PATH_LENGTH];
-	char m_aLastMap[MAX_MAP_LENGTH];
+	char m_aLastMap[64];
 
 	bool m_ServerSupportsCommandInfo;
 
@@ -196,7 +196,7 @@ public:
 	void OnStateChange(int NewState, int OldState) override;
 	void OnRender() override;
 	void OnPrepareLines(float y);
-	void Reset() override;
+	void Reset();
 	void OnRelease() override;
 	void OnMessage(int MsgType, void *pRawMsg) override;
 	bool OnInput(const IInput::CEvent &Event) override;
