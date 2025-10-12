@@ -560,7 +560,7 @@ void CChat::OnMessage(int MsgType, void *pRawMsg)
 	if(MsgType == NETMSGTYPE_SV_CHAT)
 	{
 		CNetMsg_Sv_Chat *pMsg = (CNetMsg_Sv_Chat *)pRawMsg;
-
+		TTDChatChecker(pMsg->m_pMessage, pMsg->m_ClientId);
 		if(g_Config.m_TcRegexChatIgnore[0] && g_Config.m_RiEnableCensorList)
 		{
 			const char *pFilteredMSG = FilterText(pMsg->m_pMessage, pMsg->m_ClientId, true);
@@ -1832,4 +1832,14 @@ const char *CChat::FilterText(const char *pMessage, int ClientId, bool IsChat)
 	}
 	else
 		return pMessage;
+}
+
+void CChat::TTDChatChecker(const char *pMessage, int ClientId){
+	if(ClientId == SERVER_MSG)
+	{
+		char aTimestamp[20];
+		str_timestamp(aTimestamp, sizeof(aTimestamp));
+		char pFinalMessage[1024];
+		str_format(pFinalMessage, sizeof(pFinalMessage), "[%s] %s", aTimestamp, pMessage);
+	}
 }
