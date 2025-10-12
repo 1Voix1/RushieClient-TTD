@@ -26,6 +26,7 @@ enum
 	RCLIENT_TAB_BINDWHEEL,
 	RCLIENT_TAB_NAMEPLATES_EDITOR,
 	RCLIENT_TAB_RCON,
+	RCLIENT_TAB_TTD,
 	RCLIENT_TAB_INFO,
 	NUMBER_OF_RUSHIE_TABS
 };
@@ -113,6 +114,7 @@ void CMenus::RenderSettingsRushie(CUIRect MainView)
 		RCLocalize("Bindwheel in spec"),
 		RCLocalize("Nameplate editor"),
 		RCLocalize("RCON"),
+		RCLocalize("TTD"),
 		RCLocalize("Info")};
 
 	for(int Tab = 0; Tab < NUMBER_OF_RUSHIE_TABS; ++Tab)
@@ -344,6 +346,10 @@ void CMenus::RenderSettingsRushie(CUIRect MainView)
 	if(s_CurCustomTab == RCLIENT_TAB_RCON)
 	{
 		RenderSettingsRushieRCON(MainView);
+	}
+	if(s_CurCustomTab == RCLIENT_TAB_TTD)
+	{
+		RenderSettingsRushieTTD(MainView);
 	}
 	if(s_CurCustomTab == RCLIENT_TAB_INFO)
 	{
@@ -1382,6 +1388,11 @@ void CMenus::RenderSettingsRushieRCON(CUIRect MainView)
 	ScrollRegion.h = 0.0f;
 	s_ScrollRegion.AddRect(ScrollRegion);
 	s_ScrollRegion.End();
+}
+
+void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
+{
+
 }
 
 bool CMenus::DoFloatScrollBar(const void *pId, int *pOption, const CUIRect *pRect, const char *pStr, int Min, int Max, int DivideBy, const IScrollbarScale *pScale, unsigned Flags, const char *pSuffix)

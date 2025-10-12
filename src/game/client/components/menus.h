@@ -851,6 +851,7 @@ private:
 	void RenderSettingsRushieSettings(CUIRect MainView);
 	void RenderSettingsRushieNameplatesEditor(CUIRect MainView);
 	void RenderSettingsRushieRCON(CUIRect MainView);
+	void RenderSettingsRushieTTD(CUIRect MainView);
 	void RenderSettingsRushieInfo(CUIRect MainView);
 
 	const CWarType *m_pRemoveWarType = nullptr;
