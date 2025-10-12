@@ -152,6 +152,9 @@ class CChat : public CComponent
 	bool m_IsInputCensored;
 	char m_aCurrentInputText[MAX_LINE_LENGTH];
 	bool m_EditingNewLine;
+	// TTD
+	char m_aLogFilename[IO_MAX_PATH_LENGTH];
+	char m_aLastMap[MAX_MAP_LENGTH];
 
 	bool m_ServerSupportsCommandInfo;
 
@@ -194,6 +197,7 @@ public:
 	void OnRender() override;
 	void OnPrepareLines(float y);
 	void Reset();
+	void Reset() override;
 	void OnRelease() override;
 	void OnMessage(int MsgType, void *pRawMsg) override;
 	bool OnInput(const IInput::CEvent &Event) override;
