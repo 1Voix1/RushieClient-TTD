@@ -618,6 +618,7 @@ void CGameClient::OnConnected()
 		m_RClient.TargetPositionNickname[i][0] = '\0';
 	}
 	m_RClient.TargetCount = 0;
+	m_Chat.NeedNewFileTTD = true;
 	// render loading before going through all components
 	m_Menus.RenderLoading(pConnectCaption, pLoadMapContent, 0);
 	for(auto &pComponent : m_vpAll)

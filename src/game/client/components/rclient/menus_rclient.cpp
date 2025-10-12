@@ -1392,23 +1392,26 @@ void CMenus::RenderSettingsRushieRCON(CUIRect MainView)
 
 void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
 {
-	CUIRect Label;
+	CUIRect Label, Container, Left;
 	CUIRect Button;
 
-	MainView.HSplitTop(HeadlineHeight, &Label, &MainView);
+	MainView.HSplitTop(HeadlineHeight + MarginSmall + LineSize, &Container, &MainView);
+	Container.VSplitMid(&Left, &Container);
+	Left.HSplitTop(HeadlineHeight, &Label, &Left);
 	Ui()->DoLabel(&Label, RCLocalize("TTD Settings"), HeadlineFontSize, TEXTALIGN_ML);
-	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
+	Left.HSplitTop(MarginSmall, nullptr, &Left);
+	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_RiEnableLogsTTD, RCLocalize("Enable TTD Logs"), &g_Config.m_RiEnableLogsTTD, &Left, LineSize);
+	Container.Draw(ColorRGBA(0.2f, 0.2f, 0.2f, 0.9f), IGraphics::CORNER_ALL, 3);
+	Ui()->DoLabel(&Container, RCLocalize("Hello im Voix. Feature done for moluc and TTD"), FontSize, TEXTALIGN_MC);
 
-	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_RiEnableLogsTTD, RCLocalize("Enable TTD Logs"), &g_Config.m_RiEnableLogsTTD, &MainView, LineSize);
-
+	MainView.HSplitTop(MarginBetweenSections, nullptr, &MainView);
+	MainView.HSplitTop(HeadlineHeight, &Label, &MainView);
+	Ui()->DoLabel(&Label, RCLocalize("TTD Logs"), HeadlineFontSize, TEXTALIGN_ML);
 	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
 	MainView.HSplitTop(LineSize, &Button, &MainView);
 	static CButtonContainer s_CopyLogsButton;
 	if(DoButton_Menu(&s_CopyLogsButton, RCLocalize("Copy Logs"), 0, &Button))
 		CopyTTDLogs();
-
-	MainView.HSplitTop(HeadlineHeight, &Label, &MainView);
-	Ui()->DoLabel(&Label, RCLocalize("TTD Logs"), HeadlineFontSize, TEXTALIGN_ML);
 	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
 
 	CUIRect LogView = MainView;
@@ -1423,7 +1426,7 @@ void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
 	LogView.y += ScrollOffset.y;
 
 	const char *pLogFile = GameClient()->m_Chat.GetLogFilename();
-	if(pLogFile && pLogFile[0] != '\0')
+	if(pLogFile && pLogFile[0] != '\0' && !GameClient()->m_Chat.NeedNewFileTTD == true)
 	{
 		IOHANDLE File = Storage()->OpenFile(pLogFile, IOFLAG_READ, IStorage::TYPE_SAVE);
 		if(File)

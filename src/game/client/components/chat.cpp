@@ -149,7 +149,6 @@ void CChat::Reset()
 	m_ServerCommandsNeedSorting = false;
 	m_aCurrentInputText[0] = '\0';
 	DisableMode();
-	m_aLastServerAddress[0] = '\0';
 	m_vServerCommands.clear();
 
 	for(int64_t &LastSoundPlayed : m_aLastSoundPlayed)
@@ -1856,12 +1855,15 @@ void CChat::TTDChatChecker(const char *pMessage, int ClientId){
 		const char *pMapName = Client()->GetCurrentMap();
 		CServerInfo CurrentServerInfo;
 		Client()->GetServerInfo(&CurrentServerInfo);
-		if(!pMapName || pMapName[0] == '\0' || (m_aLastMap[0] && str_comp(m_aLastMap, pMapName) != 0) || (m_aLastServerAddress[0] && str_comp(m_aLastServerAddress, CurrentServerInfo.m_aAddress) != 0))
+
+		if(NeedNewFileTTD == true || str_comp(m_aLastMap, pMapName) || str_comp(m_aLastServerAddress, CurrentServerInfo.m_aAddress))
 		{
 			m_aLogFilename[0] = '\0';
+			str_copy(m_aLastMap, pMapName, sizeof(m_aLastMap));
+			str_copy(m_aLastServerAddress, CurrentServerInfo.m_aAddress, sizeof(m_aLastServerAddress));
+			NeedNewFileTTD = false;
 		}
 
-		str_copy(m_aLastServerAddress, CurrentServerInfo.m_aAddress, sizeof(m_aLastServerAddress));
 
 		if(m_aLogFilename[0] == '\0')
 		{
@@ -1871,7 +1873,6 @@ void CChat::TTDChatChecker(const char *pMessage, int ClientId){
 			char aTimestamp[20];
 			str_timestamp(aTimestamp, sizeof(aTimestamp));
 			str_format(m_aLogFilename, sizeof(m_aLogFilename), "logs/%s_%s.log", pMapName, aTimestamp);
-			str_copy(m_aLastMap, pMapName, sizeof(m_aLastMap));
 		}
 		IOHANDLE File = Storage()->OpenFile(m_aLogFilename, IOFLAG_APPEND, IStorage::TYPE_SAVE);
 		if(!File)
