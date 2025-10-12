@@ -459,3 +459,24 @@ Change dummy pos x color when x dummy = x player
 
 Change player pos x color when x dummy = x player
 == Менять цвет X позиции у игрока если на одной оси с дамми
+
+Edge Info
+== Эдж инфо
+
+Show edge info about freeze
+== Показывать эдж инфо о фризе
+
+Show edge info about jumps
+== Показывать эдж инфо о прыжках
+
+Color when over freeze
+== Цвет когда над фризом
+
+Color when over kill
+== Цвет когда над киллом
+
+Color when falling safely
+== Цвет когда падать безопасно
+
+Show edge info
+== Показать эдж инфо
