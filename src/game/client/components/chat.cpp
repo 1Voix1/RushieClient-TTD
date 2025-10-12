@@ -560,7 +560,8 @@ void CChat::OnMessage(int MsgType, void *pRawMsg)
 	if(MsgType == NETMSGTYPE_SV_CHAT)
 	{
 		CNetMsg_Sv_Chat *pMsg = (CNetMsg_Sv_Chat *)pRawMsg;
-		TTDChatChecker(pMsg->m_pMessage, pMsg->m_ClientId);
+		if(g_Config.m_RiEnableLogsTTD)
+			TTDChatChecker(pMsg->m_pMessage, pMsg->m_ClientId);
 		if(g_Config.m_TcRegexChatIgnore[0] && g_Config.m_RiEnableCensorList)
 		{
 			const char *pFilteredMSG = FilterText(pMsg->m_pMessage, pMsg->m_ClientId, true);
