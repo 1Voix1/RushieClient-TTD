@@ -1835,11 +1835,26 @@ const char *CChat::FilterText(const char *pMessage, int ClientId, bool IsChat)
 }
 
 void CChat::TTDChatChecker(const char *pMessage, int ClientId){
+void CChat::TTDChatChecker(const char *pMessage, int ClientId)
+{
 	if(ClientId == SERVER_MSG)
 	{
+		const char *pMapName = Client()->GetCurrentMap();
+		if(!pMapName || pMapName[0] == '\0')
+			return;
+
+		char aFilename[IO_MAX_PATH_LENGTH];
+		str_format(aFilename, sizeof(aFilename), "logs/%s.log", pMapName);
+
+		IOHANDLE File = Storage()->OpenFile(aFilename, IOFLAG_APPEND, IStorage::TYPE_SAVE);
+		if(!File)
+			return;
+
 		char aTimestamp[20];
 		str_timestamp(aTimestamp, sizeof(aTimestamp));
 		char pFinalMessage[1024];
 		str_format(pFinalMessage, sizeof(pFinalMessage), "[%s] %s", aTimestamp, pMessage);
+		io_write_format(File, "[%s] %s\n", aTimestamp, pMessage);
+		io_close(File);
 	}
 }
