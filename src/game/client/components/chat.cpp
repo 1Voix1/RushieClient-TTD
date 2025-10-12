@@ -1837,6 +1837,20 @@ const char *CChat::FilterText(const char *pMessage, int ClientId, bool IsChat)
 void CChat::TTDChatChecker(const char *pMessage, int ClientId){
 	if(ClientId == SERVER_MSG)
 	{
+		bool ShouldLog = false;
+		if(str_find(pMessage, "' invited '") && str_find(pMessage, "' to your team."))
+			ShouldLog = true;
+		else if(str_find(pMessage, "' changed name to '"))
+			ShouldLog = true;
+		else if(str_find(pMessage, "' unlocked your team."))
+			ShouldLog = true;
+		else if(str_find(pMessage, "' locked your team."))
+			ShouldLog = true;
+		else if(str_find(pMessage, "' enabled team 0 mode."))
+			ShouldLog = true;
+
+		if(!ShouldLog)
+			return;
 		const char *pMapName = Client()->GetCurrentMap();
 		if(!pMapName || pMapName[0] == '\0' || (m_aLastMap[0] && str_comp(m_aLastMap, pMapName) != 0))
 		{
