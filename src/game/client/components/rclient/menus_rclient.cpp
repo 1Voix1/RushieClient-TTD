@@ -46,13 +46,19 @@ static bool s_StartedTime = false;
 const float FontSize = 14.0f;
 const float EditBoxFontSize = 12.0f;
 const float LineSize = 20.0f;
+const float ColorPickerLineSize = 25.0f;
 const float HeadlineFontSize = 20.0f;
+const float StandardFontSize = 14.0f;
 
 const float HeadlineHeight = HeadlineFontSize + 0.0f;
+const float Margin = 10.0f;
 const float MarginSmall = 5.0f;
 const float MarginExtraSmall = 2.5f;
 const float MarginBetweenSections = 30.0f;
 const float MarginBetweenViews = 30.0f;
+
+const float ColorPickerLabelSize = 13.0f;
+const float ColorPickerLineSpacing = 5.0f;
 
 static void SetFlag(int32_t &Flags, int n, bool Value)
 {
@@ -499,7 +505,9 @@ void CMenus::RenderSettingsRushieSettings(CUIRect MainView)
 			{RCLocalize("Small sens bind"), "+ri_small_sens", 0, 0},
 			{RCLocalize("Left jump"), "+jump; +left", 0, 0},
 			{RCLocalize("Right jump"), "+jump; +right", 0, 0},
-			{RCLocalize("Deepfly toggle"), "ri_deepfly_toggle", 0, 0}};
+			{RCLocalize("Deepfly toggle"), "ri_deepfly_toggle", 0, 0},
+			{RCLocalize("Show edge info"), "ri_toggle_edgeinfo", 0, 0}
+		};
 
 	auto DoSettingsControlsButtons = [&](int Start, int Stop, CUIRect View) {
 		for(int i = Start; i < Stop; i++)
@@ -970,6 +978,26 @@ void CMenus::RenderSettingsRushieSettings(CUIRect MainView)
 	Column.HSplitTop(MarginSmall, nullptr, &Column);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_RiRclientIndicatorAboveSelf, RCLocalize("Show indicator above you"), &g_Config.m_RiRclientIndicatorAboveSelf, &Column, LineSize);
 	Column.HSplitTop(MarginSmall, nullptr, &Column);
+
+	Column.HSplitTop(MarginBetweenSections, nullptr, &Column);
+	Column.HSplitTop(HeadlineHeight, &Label, &Column);
+	Ui()->DoLabel(&Label, RCLocalize("Edge Info"), HeadlineFontSize, TEXTALIGN_MC);
+	Column.HSplitTop(MarginSmall, nullptr, &Column);
+	DoSettingsControlsButtons(9, 10, Column);
+	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_RiEdgeInfoCords, RCLocalize("Show edge info about freeze"), &g_Config.m_RiEdgeInfoCords, &Column, LineSize);
+	Column.HSplitTop(MarginSmall, nullptr, &Column);
+	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_RiEdgeInfoJump, RCLocalize("Show edge info about jumps"), &g_Config.m_RiEdgeInfoJump, &Column, LineSize);
+	Column.HSplitTop(MarginSmall, nullptr, &Column);
+	auto DoOutlineType = [&](CButtonContainer &ButtonContainer, const char *pName, unsigned int &Color, ColorRGBA ColorDefault) {
+		// Checkbox & Color
+		DoLine_ColorPicker(&ButtonContainer, ColorPickerLineSize, ColorPickerLabelSize, 0, &Column, pName, &Color, ColorDefault);
+		Column.HSplitTop(ColorPickerLineSpacing, nullptr, &Column);
+	};
+	static CButtonContainer s_aOutlineButtonContainers[3];
+	DoOutlineType(s_aOutlineButtonContainers[0], TCLocalize("Color when over freeze"), g_Config.m_RiEdgeInfoColorFreeze, color_cast<ColorRGBA>(ColorHSLA(CConfig::ms_RiEdgeInfoColorFreeze)));
+	DoOutlineType(s_aOutlineButtonContainers[1], TCLocalize("Color when over kill"), g_Config.m_RiEdgeInfoColorKill, color_cast<ColorRGBA>(ColorHSLA(CConfig::ms_RiEdgeInfoColorKill)));
+	DoOutlineType(s_aOutlineButtonContainers[2], TCLocalize("Color when falling safely"), g_Config.m_RiEdgeInfoColorSafe, color_cast<ColorRGBA>(ColorHSLA(CConfig::ms_RiEdgeInfoColorSafe)));
+
 
 	RightView = Column;
 

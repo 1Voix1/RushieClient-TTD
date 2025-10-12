@@ -65,6 +65,11 @@ void CEdgeHelper::SetActive(bool Active)
 	m_Active = Active;
 	if(m_Active)
 	{
+		if(!g_Config.m_RiEdgeInfoJump && !g_Config.m_RiEdgeInfoCords)
+		{
+			GameClient()->Echo("Enable any edgeinfo function");
+			OnReset();
+		}
 	}
 	else
 	{
@@ -96,7 +101,7 @@ void CEdgeHelper::RenderEdgeHelper()
 {
 	CUIRect Base, EdgeInfo, JumpInfo;
 
-	Base.h = 100.0f * 3.0f / 6;
+	Base.h = 100.0f * 3.0f / (g_Config.m_RiEdgeInfoJump && g_Config.m_RiEdgeInfoCords ? 6 : 12);
 	Base.w = 100.0f * 3.0f * Graphics()->ScreenAspect() / 5;
 	Base.x = 100.0f * 3.0f * Graphics()->ScreenAspect() / 2 - Base.w / 2;
 	Base.y = (100.0f * 3.0f) / 2 + 16.0f;
@@ -120,9 +125,12 @@ void CEdgeHelper::RenderEdgeHelper()
 	const int ClientId = GameClient()->m_Snap.m_SpecInfo.m_Active ? GameClient()->m_Snap.m_SpecInfo.m_SpectatorId : GameClient()->m_Snap.m_LocalClientId;
 	m_Pos_x = GetPositionEdgeHelper(ClientId, g_Config.m_ClDummy);
 
-	Base.HSplitMid(&EdgeInfo, &JumpInfo);
-	RenderEdgeHelperEdgeInfo(&EdgeInfo);
-	RenderEdgeHelperJumpInfo(&JumpInfo);
+	if(g_Config.m_RiEdgeInfoCords && g_Config.m_RiEdgeInfoJump)
+		Base.HSplitMid(&EdgeInfo, &JumpInfo);
+	if(g_Config.m_RiEdgeInfoCords)
+		RenderEdgeHelperEdgeInfo(g_Config.m_RiEdgeInfoJump ? &EdgeInfo : &Base);
+	if(g_Config.m_RiEdgeInfoJump)
+		RenderEdgeHelperJumpInfo(g_Config.m_RiEdgeInfoCords ? &JumpInfo : &Base);
 }
 
 float CEdgeHelper::GetPositionEdgeHelper(int ClientId, int Conn)
