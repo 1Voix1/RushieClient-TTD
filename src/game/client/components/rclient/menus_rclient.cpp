@@ -1401,17 +1401,23 @@ void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
 	Ui()->DoLabel(&Label, RCLocalize("TTD Settings"), HeadlineFontSize, TEXTALIGN_ML);
 	Left.HSplitTop(MarginSmall, nullptr, &Left);
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_RiEnableLogsTTD, RCLocalize("Enable TTD Logs"), &g_Config.m_RiEnableLogsTTD, &Left, LineSize);
-	Container.Draw(ColorRGBA(0.2f, 0.2f, 0.2f, 0.9f), IGraphics::CORNER_ALL, 3);
+	Container.Draw(ColorRGBA(0.2f, 0.2f, 0.2f, 0.3f), IGraphics::CORNER_ALL, 3);
 	Ui()->DoLabel(&Container, RCLocalize("Hello im Voix. Feature done for moluc and TTD"), FontSize, TEXTALIGN_MC);
 
 	MainView.HSplitTop(MarginBetweenSections, nullptr, &MainView);
 	MainView.HSplitTop(HeadlineHeight, &Label, &MainView);
 	Ui()->DoLabel(&Label, RCLocalize("TTD Logs"), HeadlineFontSize, TEXTALIGN_ML);
 	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
-	MainView.HSplitTop(LineSize, &Button, &MainView);
+
+	MainView.HSplitTop(LineSize, &Container, &MainView);
+	Container.VSplitMid(&Left, &Container, 5);
 	static CButtonContainer s_CopyLogsButton;
-	if(DoButton_Menu(&s_CopyLogsButton, RCLocalize("Copy Logs"), 0, &Button))
+	if(DoButton_Menu(&s_CopyLogsButton, RCLocalize("Copy Logs"), 0, &Left))
 		CopyTTDLogs();
+	static CButtonContainer s_NewFileButton;
+	if(DoButton_Menu(&s_NewFileButton, RCLocalize("New File"), 0, &Container))
+		GameClient()->m_Chat.NeedNewFileTTD = true;
+
 	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
 
 	CUIRect LogView = MainView;
@@ -1431,7 +1437,6 @@ void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
 		IOHANDLE File = Storage()->OpenFile(pLogFile, IOFLAG_READ, IStorage::TYPE_SAVE);
 		if(File)
 		{
-			char aLine[1024];
 			CLineReader Reader;
 			Reader.OpenFile(File);
 			float y = LogView.y;
