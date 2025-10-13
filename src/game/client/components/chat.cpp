@@ -1838,6 +1838,30 @@ const char *CChat::FilterText(const char *pMessage, int ClientId, bool IsChat)
 void CChat::TTDChatChecker(const char *pMessage, int ClientId){
 	if(ClientId == SERVER_MSG)
 	{
+		if(str_find(pMessage, "' entered and joined the game"))
+		{
+
+			if(g_Config.m_RiAutoInvite)
+			{
+				char aPlayerName[MAX_NAME_LENGTH];
+				const char *pNameStart = str_find(pMessage, "'");
+				if(pNameStart)
+				{
+					pNameStart++;
+					const char *pNameEnd = str_find(pNameStart, "' entered and joined the game");
+					if(pNameEnd)
+					{
+						str_truncate(aPlayerName, sizeof(aPlayerName), pNameStart, pNameEnd - pNameStart);
+						if(str_find_nocase(g_Config.m_RiAutoInvitePlayers, aPlayerName))
+						{
+							char aBuf[256];
+							str_format(aBuf, sizeof(aBuf), "/invite %s", aPlayerName);
+							SendChat(0, aBuf);
+						}
+					}
+				}
+			}
+		}
 		bool ShouldLog = false;
 		if(str_find(pMessage, "' invited '") && str_find(pMessage, "' to your team."))
 			ShouldLog = true;

@@ -1392,8 +1392,17 @@ void CMenus::RenderSettingsRushieRCON(CUIRect MainView)
 
 void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
 {
+	// Add scroll region for the whole page
+	static CScrollRegion s_PageScrollRegion;
+	vec2 PageScrollOffset(0.0f, 0.0f);
+	CScrollRegionParams PageScrollParams;
+	PageScrollParams.m_ScrollUnit = 120.0f;
+	PageScrollParams.m_Flags = CScrollRegionParams::FLAG_CONTENT_STATIC_WIDTH;
+	PageScrollParams.m_ScrollbarMargin = 5.0f;
+	s_PageScrollRegion.Begin(&MainView, &PageScrollOffset, &PageScrollParams);
+	MainView.y += PageScrollOffset.y;
+
 	CUIRect Label, Container, Left;
-	CUIRect Button;
 
 	MainView.HSplitTop(HeadlineHeight + MarginSmall + LineSize, &Container, &MainView);
 	Container.VSplitMid(&Left, &Container);
@@ -1420,7 +1429,10 @@ void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
 
 	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
 
-	CUIRect LogView = MainView;
+	CUIRect LogView;
+	const float LogViewHeight = 50.0f;
+	MainView.HSplitTop(LogViewHeight, &LogView, &MainView);
+
 	LogView.Draw(ColorRGBA(0.0f, 0.0f, 0.0f, 0.15f), IGraphics::CORNER_ALL, 5.0f);
 	LogView.Margin(5.0f, &LogView);
 
@@ -1462,8 +1474,20 @@ void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
 	}
 
 	s_ScrollRegion.End();
-}
 
+	MainView.HSplitTop(MarginBetweenSections, nullptr, &MainView);
+	MainView.HSplitTop(HeadlineHeight, &Label, &MainView);
+	Ui()->DoLabel(&Label, RCLocalize("Auto Invite"), HeadlineFontSize, TEXTALIGN_ML);
+	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
+
+	CUIRect PageScrollRegion;
+	PageScrollRegion.x = MainView.x;
+	PageScrollRegion.y = MainView.y + MarginSmall * 2.0f + 1000.0f;
+	PageScrollRegion.w = MainView.w;
+	PageScrollRegion.h = 0.0f;
+	s_PageScrollRegion.AddRect(PageScrollRegion);
+	s_PageScrollRegion.End();
+}
 void CMenus::CopyTTDLogs()
 {
 	const char *pLogFile = GameClient()->m_Chat.GetLogFilename();

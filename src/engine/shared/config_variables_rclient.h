@@ -102,3 +102,5 @@ MACRO_CONFIG_INT(RiEdgeInfoJump, ri_edge_info_jump, 1, 0, 1, CFGFLAG_CLIENT | CF
 
 //TTD
 MACRO_CONFIG_INT(RiEnableLogsTTD, ri_enable_log_TTD, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Enables logs for travel to ddnet")
+MACRO_CONFIG_INT(RiAutoInvite, ri_auto_invite, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Enables auto invite in team on join")
+MACRO_CONFIG_STR(RiAutoInvitePlayers, ri_auto_invite_players, 1024, "", CFGFLAG_CLIENT | CFGFLAG_SAVE, "Auto invite players nicknames in team")
