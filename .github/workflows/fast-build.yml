@@ -68,7 +68,6 @@ jobs:
     - name: Add rust for Windows 32
       if: contains(matrix.cmake-args, '-A Win32')
       run: |
-        rustup default stable
         rustup target add i686-pc-windows-msvc
 
     - name: Cache Rust dependencies
@@ -94,6 +93,11 @@ jobs:
             POST_FLAGS+=" -DPNG_LIBRARY=${GITHUB_WORKSPACE}/ddnet-libs/png/mac/libfat/libpng16.16.dylib"
             POST_FLAGS+=" -DPNG_INCLUDEDIR=${GITHUB_WORKSPACE}/ddnet-libs/png/include"
         fi
+        
+        if [[ "${{ matrix.cmake-args }}" == *"-A Win32"* ]]; then
+            POST_FLAGS+=" -DCMAKE_RUST_COMPILER_TARGET=i686-pc-windows-msvc"
+        fi
+        
         mkdir release
         cd release
         ${{ matrix.cmake-path }}cmake -E env ${{ matrix.cmake-init-env }} $ENVFLAGS ${{ matrix.cmake-path }}cmake ${{ matrix.cmake-args }} $POST_FLAGS -DCMAKE_BUILD_TYPE=Release -DDOWNLOAD_GTEST=ON -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=. ..
