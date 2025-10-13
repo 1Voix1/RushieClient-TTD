@@ -1392,16 +1392,6 @@ void CMenus::RenderSettingsRushieRCON(CUIRect MainView)
 
 void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
 {
-	// Add scroll region for the whole page
-	static CScrollRegion s_PageScrollRegion;
-	vec2 PageScrollOffset(0.0f, 0.0f);
-	CScrollRegionParams PageScrollParams;
-	PageScrollParams.m_ScrollUnit = 120.0f;
-	PageScrollParams.m_Flags = CScrollRegionParams::FLAG_CONTENT_STATIC_WIDTH;
-	PageScrollParams.m_ScrollbarMargin = 5.0f;
-	s_PageScrollRegion.Begin(&MainView, &PageScrollOffset, &PageScrollParams);
-	MainView.y += PageScrollOffset.y;
-
 	CUIRect Label, Container, Left;
 
 	MainView.HSplitTop(HeadlineHeight + MarginSmall + LineSize, &Container, &MainView);
@@ -1430,7 +1420,7 @@ void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
 	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
 
 	CUIRect LogView;
-	const float LogViewHeight = 50.0f;
+	const float LogViewHeight = 250.0f;
 	MainView.HSplitTop(LogViewHeight, &LogView, &MainView);
 
 	LogView.Draw(ColorRGBA(0.0f, 0.0f, 0.0f, 0.15f), IGraphics::CORNER_ALL, 5.0f);
@@ -1480,13 +1470,11 @@ void CMenus::RenderSettingsRushieTTD(CUIRect MainView)
 	Ui()->DoLabel(&Label, RCLocalize("Auto Invite"), HeadlineFontSize, TEXTALIGN_ML);
 	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
 
-	CUIRect PageScrollRegion;
-	PageScrollRegion.x = MainView.x;
-	PageScrollRegion.y = MainView.y + MarginSmall * 2.0f + 1000.0f;
-	PageScrollRegion.w = MainView.w;
-	PageScrollRegion.h = 0.0f;
-	s_PageScrollRegion.AddRect(PageScrollRegion);
-	s_PageScrollRegion.End();
+	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_RiAutoInvite, RCLocalize("Enable Auto Invite"), &g_Config.m_RiAutoInvite, &MainView, LineSize);
+	MainView.HSplitTop(MarginSmall, nullptr, &MainView);
+	MainView.HSplitTop(LineSize, &Label, &MainView);
+	static CLineInput s_PlayerList;
+	DoEditBoxWithLabel(&s_PlayerList, &Label, RCLocalize("Players: "), "player1, player2, player3", g_Config.m_RiAutoInvitePlayers, sizeof(g_Config.m_RiAutoInvitePlayers));
 }
 void CMenus::CopyTTDLogs()
 {
