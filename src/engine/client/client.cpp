@@ -206,8 +206,8 @@ int CClient::SendMsgActive(CMsgPacker *pMsg, int Flags)
 
 void CClient::SendRClientInfo(int Conn)
 {
-	CMsgPacker Msg(NETMSG_IAMRUSHIE, true);
-	Msg.AddString(RCLIENT_VERSION " built on " __DATE__ ", " __TIME__);
+	CMsgPacker Msg(NETMSG_IAMTATER, true);
+	Msg.AddString(TCLIENT_VERSION " built on " __DATE__ ", " __TIME__);
 	SendMsg(Conn, &Msg, MSGFLAG_VITAL);
 }
 
