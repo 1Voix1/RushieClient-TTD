@@ -1224,7 +1224,7 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 	if(Data.m_ShowRClientIndicator)
 	{
 		// Check if this player is using RClient
-		Data.m_IsUserRClientIndicator = GameClient()->m_RClient.IsPlayerRClient(pPlayerInfo->m_ClientId);
+		Data.m_IsUserRClientIndicator = GameClient()->m_RClientIndicator.IsPlayerRClient(pPlayerInfo->m_ClientId);
 	}
 
 	// TClient

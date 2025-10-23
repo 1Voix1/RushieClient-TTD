@@ -142,6 +142,7 @@ void CGameClient::OnConsoleInit()
 					      &m_TClient,
 					      &m_RClient, // Must be before chat and players
 					      &m_Players,
+					      &m_RClientIndicator,
 					      &m_MapLayersForeground,
 					      &m_Outlines,
 					      &m_Pet,
