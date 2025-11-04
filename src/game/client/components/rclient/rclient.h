@@ -39,7 +39,6 @@ class CRClient : public CComponent
 	int m_Smallsenstogglelastinput = 0;
 	int m_SmallsensEnabled = 0;
 	//Deepfly
-	int m_DeepflyEnabled = 0;
 	char m_Oldmouse1Bind[128];
 
 	// GetInfofromDDstats
