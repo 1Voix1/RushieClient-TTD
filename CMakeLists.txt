@@ -319,7 +319,8 @@ if(NOT MSVC AND NOT HAIKU)
   endif()
 
   # Disable exceptions as DDNet does not use them.
-  add_cxx_compiler_flag_if_supported(OUR_FLAGS -fno-exceptions)
+  # Haha, but we need them -Tater
+  # add_cxx_compiler_flag_if_supported(OUR_FLAGS -fno-exceptions)
 
   # Inaccurate floating point numbers cause problems on mingw-w64-gcc when
   # compiling for x86, might cause problems elsewhere. So don't store floats
@@ -2275,6 +2276,13 @@ set_src(ENGINE_EXTERNAL GLOB src/engine/external
   tinyexpr.cpp
   tinyexpr.h
 )
+
+# ChaiScript for tclient
+file(GLOB_RECURSE ENGINE_EXTERNAL_CHAISCRIPT
+  "${PROJECT_SOURCE_DIR}/src/engine/external/chaiscript/*.hpp"
+)
+list(APPEND ENGINE_EXTERNAL ${ENGINE_EXTERNAL_CHAISCRIPT})
+
 set_src(ENGINE_GFX GLOB src/engine/gfx
   image.cpp
   image_loader.cpp
@@ -2334,9 +2342,6 @@ list(REMOVE_ITEM GAME_SHARED ${ENGINE_UUID_SHARED})
 set(GAME_GENERATED_SHARED
   src/generated/data_types.h
   src/generated/git_revision.cpp
-  src/generated/protocol.h
-  src/generated/protocol7.h
-  src/generated/protocolglue.h
 )
 set(DEPS ${DEP_JSON} ${DEP_MD5} ${ZLIB_DEP})
 
@@ -2500,10 +2505,14 @@ if(CLIENT)
     components/ghost.h
     components/hud.cpp
     components/hud.h
+    components/important_alert.cpp
+    components/important_alert.h
     components/infomessages.cpp
     components/infomessages.h
     components/items.cpp
     components/items.h
+    components/key_binder.cpp
+    components/key_binder.h
     components/local_server.cpp
     components/local_server.h
     components/mapimages.cpp
@@ -2524,6 +2533,8 @@ if(CLIENT)
     components/menus_settings.cpp
     components/menus_settings7.cpp
     components/menus_settings_assets.cpp
+    components/menus_settings_controls.cpp
+    components/menus_settings_controls.h
     components/menus_start.cpp
     components/menus_start.h
     components/motd.cpp
@@ -2569,6 +2580,8 @@ if(CLIENT)
     components/tclient/bindchat.h
     components/tclient/bindwheel.cpp
     components/tclient/bindwheel.h
+    components/tclient/chaiscript.cpp
+    components/tclient/chaiscript.h
     components/tclient/conditional.cpp
     components/tclient/conditional.h
     components/tclient/custom_communities.cpp
@@ -2837,8 +2850,17 @@ if(CLIENT)
   target_link_libraries(game-client ${LIBS_CLIENT})
 
   if(MSVC)
+    target_compile_options(game-client PRIVATE /bigobj) # TClient, required for ChaiScript
     target_link_options(game-client PRIVATE /ENTRY:mainCRTStartup)
   endif()
+
+  if(WIN32 AND NOT MSVC)
+    target_compile_options(game-client PRIVATE -Wa,-mbig-obj) # TClient, required for ChaiScript
+  endif()
+
+  # Silence warnings from ChaiScript
+  target_include_directories(game-client SYSTEM PRIVATE
+    ${PROJECT_SOURCE_DIR}/src/engine/external/chaiscript)
 
   target_include_directories(game-client SYSTEM PRIVATE
     ${FREETYPE_INCLUDE_DIRS}

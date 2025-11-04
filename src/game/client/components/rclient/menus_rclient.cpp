@@ -324,7 +324,7 @@ void CMenus::RenderSettingsRushie(CUIRect MainView)
 
 		Ui()->DoLabel(&KeyLabel, aBuf, FontSize, TEXTALIGN_ML);
 		int OldId = Key.m_KeyId, OldModifierCombination = Key.m_ModifierCombination, NewModifierCombination;
-		int NewId = DoKeyReader((void *)&Key.m_pName, &Button, OldId, OldModifierCombination, &NewModifierCombination);
+		int NewId = GameClient()->m_KeyBinder.DoKeyReader((void *)&Key.m_pName, &Button, OldId, OldModifierCombination, &NewModifierCombination);
 		if(NewId != OldId || NewModifierCombination != OldModifierCombination)
 		{
 			if(OldId != 0 || NewId == 0)
@@ -521,7 +521,7 @@ void CMenus::RenderSettingsRushieSettings(CUIRect MainView)
 
 			Ui()->DoLabel(&Label, aBuf, 13.0f, TEXTALIGN_ML);
 			int OldId = Key.m_KeyId, OldModifierCombination = Key.m_ModifierCombination, NewModifierCombination;
-			int NewId = DoKeyReader(&Key.m_KeyId, &Button, OldId, OldModifierCombination, &NewModifierCombination);
+			int NewId = GameClient()->m_KeyBinder.DoKeyReader((void *)&Key.m_pName, &Button, OldId, OldModifierCombination, &NewModifierCombination);
 			if(NewId != OldId || NewModifierCombination != OldModifierCombination)
 			{
 				if(OldId != 0 || NewId == 0)
@@ -1330,7 +1330,7 @@ void CMenus::RenderSettingsRushieRCON(CUIRect MainView)
 
 			Ui()->DoLabel(&Label, aBuf, 13.0f, TEXTALIGN_ML);
 			int OldId = Key.m_KeyId, OldModifierCombination = Key.m_ModifierCombination, NewModifierCombination;
-			int NewId = DoKeyReader(&Key.m_KeyId, &Button, OldId, OldModifierCombination, &NewModifierCombination);
+			int NewId = GameClient()->m_KeyBinder.DoKeyReader((void *)&Key.m_pName, &Button, OldId, OldModifierCombination, &NewModifierCombination);
 			if(NewId != OldId || NewModifierCombination != OldModifierCombination)
 			{
 				if(OldId != 0 || NewId == 0)

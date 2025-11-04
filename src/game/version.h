@@ -5,10 +5,10 @@
 
 // ddnet
 #define GAME_NAME "DDNet"
-#define DDNET_VERSION_NUMBER 19050
+#define DDNET_VERSION_NUMBER 19060
 extern const char *GIT_SHORTREV_HASH;
 #ifndef GAME_RELEASE_VERSION_INTERNAL
-#define GAME_RELEASE_VERSION_INTERNAL 19.5
+#define GAME_RELEASE_VERSION_INTERNAL 19.6
 #endif
 #define GAME_RELEASE_VERSION STRINGIFY(GAME_RELEASE_VERSION_INTERNAL)
 
@@ -18,14 +18,18 @@ extern const char *GIT_SHORTREV_HASH;
 #define GAME_NETVERSION "0.6 626fce9a778df4d4"
 #define GAME_NETVERSION7 "0.7 802f1be60a05665f"
 
-// custom
-#define CLIENT_NAME "RClient"
+// RClient
 #ifndef RCLIENT_VERSION
 #define RCLIENT_VERSION "2.0.0"
 #endif
 
+// TClient
 #ifndef TCLIENT_VERSION
-#define TCLIENT_VERSION "10.6.0"
+#define TCLIENT_VERSION "10.7.0"
 #endif
+
+// custom
+#define CLIENT_NAME "RClient"
+#define CLIENT_RELEASE_VERSION RCLIENT_VERSION
 
 #endif

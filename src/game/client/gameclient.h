@@ -44,8 +44,10 @@
 #include "components/freezebars.h"
 #include "components/ghost.h"
 #include "components/hud.h"
+#include "components/important_alert.h"
 #include "components/infomessages.h"
 #include "components/items.h"
+#include "components/key_binder.h"
 #include "components/local_server.h"
 #include "components/mapimages.h"
 #include "components/maplayers.h"
@@ -76,6 +78,7 @@
 #include "components/tclient/bg_draw.h"
 #include "components/tclient/bindchat.h"
 #include "components/tclient/bindwheel.h"
+#include "components/tclient/chaiscript.h"
 #include "components/tclient/conditional.h"
 #include "components/tclient/custom_communities.h"
 #include "components/tclient/mod.h"
@@ -174,6 +177,7 @@ public:
 	CBroadcast m_Broadcast;
 	CGameConsole m_GameConsole;
 	CBinds m_Binds;
+	CKeyBinder m_KeyBinder;
 	CParticles m_Particles;
 	CMenus m_Menus;
 	CSkins m_Skins;
@@ -181,6 +185,7 @@ public:
 	CCountryFlags m_CountryFlags;
 	CFlow m_Flow;
 	CHud m_Hud;
+	CImportantAlert m_ImportantAlert;
 	CDebugHud m_DebugHud;
 	CControls m_Controls;
 	CEffects m_Effects;
@@ -228,6 +233,7 @@ public:
 	COutlines m_Outlines;
 	CRainbow m_Rainbow;
 	CWarList m_WarList;
+	CChaiScript m_ChaiScript;
 	CConditional m_Conditional;
 	CMod m_Mod;
 	CCustomCommunities m_CustomCommunities;
@@ -1009,6 +1015,9 @@ private:
 	};
 
 	SMultiView m_MultiView;
+
+	void OnSaveCodeNetMessage(const CNetMsg_Sv_SaveCode *pMsg);
+	void StoreSave(const char *pTeamMembers, const char *pGeneratedCode) const;
 
 public:
 	// TClient
