@@ -239,12 +239,12 @@ private:
 	static_assert(MAX_CLIENTS <= 999, "Make this buffer bigger");
 	char m_aText[5] = "";
 	float m_FontSize = -INFINITY;
-	bool m_ClientIdSeperateLine = false;
+	bool m_ClientIdSeparateLine = false;
 
 protected:
 	bool UpdateNeeded(CGameClient &This, const CNamePlateData &Data) override
 	{
-		m_Visible = Data.m_ShowClientId && (Data.m_ClientIdSeperateLine == m_ClientIdSeperateLine);
+		m_Visible = Data.m_ShowClientId && (Data.m_ClientIdSeparateLine == m_ClientIdSeparateLine);
 		if(!m_Visible)
 			return false;
 		m_Color = Data.m_Color;
@@ -254,7 +254,7 @@ protected:
 	{
 		m_FontSize = Data.m_FontSizeClientId;
 		m_ClientId = Data.m_ClientId;
-		if(m_ClientIdSeperateLine)
+		if(m_ClientIdSeparateLine)
 			str_format(m_aText, sizeof(m_aText), "%d", m_ClientId);
 		else
 			str_format(m_aText, sizeof(m_aText), "%d:", m_ClientId);
@@ -264,10 +264,10 @@ protected:
 	}
 
 public:
-	CNamePlatePartClientId(CGameClient &This, bool ClientIdSeperateLine) :
+	CNamePlatePartClientId(CGameClient &This, bool ClientIdSeparateLine) :
 		CNamePlatePartText(This)
 	{
-		m_ClientIdSeperateLine = ClientIdSeperateLine;
+		m_ClientIdSeparateLine = ClientIdSeparateLine;
 	}
 };
 
@@ -470,12 +470,14 @@ public:
 	friend class CGameClient;
 	void Update(CGameClient &This, const CNamePlateData &Data) override
 	{
-		m_Visible = g_Config.m_TcNameplateCountry;
+		m_CountryCode = This.m_aClients[Data.m_ClientId].m_Country;
+		m_Visible = g_Config.m_TcNameplateCountry // The config
+			    && !Data.m_Local // Not local player
+			    && m_CountryCode != 0 && m_CountryCode != -1 && m_CountryCode != -2; // No default flags
 		if(!m_Visible)
 			return;
 		m_Alpha = Data.m_Color.a;
 		m_Size = vec2(Data.m_FontSize / FLAG_RATIO, Data.m_FontSize);
-		m_CountryCode = This.m_aClients[Data.m_ClientId].m_Country;
 	}
 	void Render(CGameClient &This, vec2 Pos) const override
 	{
@@ -514,8 +516,8 @@ public:
 						    (Data.m_ShowName && g_Config.m_TcNameplatePingCircle > 0));
 		if(!m_Visible)
 			return;
-		int ping = Data.m_InGame ? This.m_Snap.m_apPlayerInfos[Data.m_ClientId]->m_Latency : (1 + Data.m_ClientId) * 25;
-		m_Color = color_cast<ColorRGBA>(ColorHSLA((float)(300 - std::clamp(ping, 0, 300)) / 1000.0f, 1.0f, 0.5f, Data.m_Color.a));
+		int Ping = Data.m_InGame ? This.m_Snap.m_apPlayerInfos[Data.m_ClientId]->m_Latency : (1 + Data.m_ClientId) * 25;
+		m_Color = color_cast<ColorRGBA>(ColorHSLA((float)(300 - std::clamp(Ping, 0, 300)) / 1000.0f, 1.0f, 0.5f, Data.m_Color.a));
 	}
 	void Render(CGameClient &This, vec2 Pos) const override
 	{
@@ -532,7 +534,7 @@ public:
 class CNamePlatePartSkin : public CNamePlatePartText
 {
 private:
-	char m_aText[MAX_CLAN_LENGTH] = "";
+	char m_aText[MAX_SKIN_LENGTH] = "";
 	float m_FontSize = -INFINITY;
 
 protected:
@@ -979,8 +981,8 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 	Data.m_FontSize = 18.0f + 20.0f * g_Config.m_ClNamePlatesSize / 100.0f;
 
 	Data.m_ClientId = pPlayerInfo->m_ClientId;
-	Data.m_ClientIdSeperateLine = g_Config.m_ClNamePlatesIdsSeperateLine;
-	Data.m_FontSizeClientId = Data.m_ClientIdSeperateLine ? (18.0f + 20.0f * g_Config.m_ClNamePlatesIdsSize / 100.0f) : Data.m_FontSize;
+	Data.m_ClientIdSeparateLine = g_Config.m_ClNamePlatesIdsSeparateLine;
+	Data.m_FontSizeClientId = Data.m_ClientIdSeparateLine ? (18.0f + 20.0f * g_Config.m_ClNamePlatesIdsSize / 100.0f) : Data.m_FontSize;
 
 	Data.m_ShowClan = Data.m_ShowName && g_Config.m_ClNamePlatesClan;
 	Data.m_pClan = GameClient()->m_aClients[pPlayerInfo->m_ClientId].m_aClan;
@@ -1224,12 +1226,13 @@ void CNamePlates::RenderNamePlateGame(vec2 Position, const CNetObj_PlayerInfo *p
 	if(Data.m_ShowRClientIndicator)
 	{
 		// Check if this player is using RClient
-		Data.m_IsUserRClientIndicator = GameClient()->m_RClient.IsPlayerRClient(pPlayerInfo->m_ClientId);
+		Data.m_IsUserRClientIndicator = GameClient()->m_RClientIndicator.IsPlayerRClient(pPlayerInfo->m_ClientId);
 	}
 
 	// TClient
 	if(g_Config.m_TcWarList && g_Config.m_TcWarListShowClan && GameClient()->m_WarList.GetWarData(pPlayerInfo->m_ClientId).m_WarClan)
 		Data.m_ShowClan = true;
+	Data.m_Local = pPlayerInfo->m_Local;
 
 	// Check if the nameplate is actually on screen
 	CNamePlate &NamePlate = m_pData->m_aNamePlates[pPlayerInfo->m_ClientId];
@@ -1262,8 +1265,8 @@ void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
 
 	Data.m_ShowClientId = Data.m_ShowName && (g_Config.m_Debug || g_Config.m_ClNamePlatesIds);
 	Data.m_ClientId = Dummy + 1;
-	Data.m_ClientIdSeperateLine = g_Config.m_ClNamePlatesIdsSeperateLine;
-	Data.m_FontSizeClientId = Data.m_ClientIdSeperateLine ? (18.0f + 20.0f * g_Config.m_ClNamePlatesIdsSize / 100.0f) : Data.m_FontSize;
+	Data.m_ClientIdSeparateLine = g_Config.m_ClNamePlatesIdsSeparateLine;
+	Data.m_FontSizeClientId = Data.m_ClientIdSeparateLine ? (18.0f + 20.0f * g_Config.m_ClNamePlatesIdsSize / 100.0f) : Data.m_FontSize;
 
 	Data.m_ShowClan = Data.m_ShowName && g_Config.m_ClNamePlatesClan;
 	Data.m_pClan = Dummy == 0 ? g_Config.m_PlayerClan : g_Config.m_ClDummyClan;
@@ -1295,6 +1298,9 @@ void CNamePlates::RenderNamePlatePreview(vec2 Position, int Dummy)
 		Data.m_HookStrongWeakState = Data.m_HookStrongWeakId == 2 ? EHookStrongWeakState::STRONG : EHookStrongWeakState::WEAK;
 		Data.m_ShowHookStrongWeak = g_Config.m_ClNamePlatesStrong > 0;
 	}
+
+	// TClient
+	Data.m_Local = false;
 
 	CTeeRenderInfo TeeRenderInfo;
 	if(Dummy == 0)
@@ -1361,7 +1367,7 @@ void CNamePlates::OnRender()
 			// TClient
 			if(GameClient()->m_aClients[i].m_IsVolleyBall)
 				continue;
-			//if(g_Config.m_TcRenderNameplateSpec > 0)
+			// if(g_Config.m_TcRenderNameplateSpec > 0)
 			//	continue;
 			const vec2 RenderPos = GameClient()->m_aClients[i].m_RenderPos;
 			RenderNamePlateGame(RenderPos, pInfo, 1.0f);

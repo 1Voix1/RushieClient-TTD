@@ -480,3 +480,9 @@ Color when falling safely
 
 Show edge info
 == Показать эдж инфо
+
+Edge info pos x
+== Поз. x эдж инфо
+
+Edge info pos y
+== Поз. y эдж инфо

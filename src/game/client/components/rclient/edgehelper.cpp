@@ -103,8 +103,8 @@ void CEdgeHelper::RenderEdgeHelper()
 
 	Base.h = 100.0f * 3.0f / (g_Config.m_RiEdgeInfoJump && g_Config.m_RiEdgeInfoCords ? 6 : 12);
 	Base.w = 100.0f * 3.0f * Graphics()->ScreenAspect() / 5;
-	Base.x = 100.0f * 3.0f * Graphics()->ScreenAspect() / 2 - Base.w / 2;
-	Base.y = (100.0f * 3.0f) / 2 + 16.0f;
+	Base.x = (100.0f * 3.0f * Graphics()->ScreenAspect() / 2 - Base.w / 2) * (g_Config.m_RiEdgeInfoPosX / 50.0f);
+	Base.y = ((100.0f * 3.0f) / 2) * (g_Config.m_RiEdgeInfoPosY / 50.0f);
 
 	vec2 ScreenTL, ScreenBR;
 	Graphics()->GetScreen(&ScreenTL.x, &ScreenTL.y, &ScreenBR.x, &ScreenBR.y);

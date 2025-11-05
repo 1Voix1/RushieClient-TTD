@@ -1731,8 +1731,8 @@ void CHud::RenderMovementInformation()
 		Dummyinfo = GetMovementInformation(GameClient()->m_aLocalIds[!g_Config.m_ClDummy], g_Config.m_ClDummy);
 
 	float y = StartY + LineSpacer * 2.0f;
-	float xl = StartX + 2.0f;
-	float xr = m_Width - 2.0f;
+	const float LeftX = StartX + 2.0f;
+	const float RightX = m_Width - 2.0f;
 
 	if(g_Config.m_ClShowhudPlayerPosition)
 	{
@@ -1748,17 +1748,17 @@ void CHud::RenderMovementInformation()
 		if(g_Config.m_RiChangePlayerColorWhenXDummyEqualXPlayer && g_Config.m_RiChangeDummyColorWhenXDummyEqualXPlayer && Dummyinfo.m_Pos.x == Info.m_Pos.x)
 			PosxTargetEqualPosxPlayer = 1;
 
-		TextRender()->Text(xl, y, Fontsize, Localize("Position:"), -1.0f);
+		TextRender()->Text(LeftX, y, Fontsize, Localize("Position:"), -1.0f);
 		y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 
-		TextRender()->Text(xl, y, Fontsize, "X:", -1.0f);
+		TextRender()->Text(LeftX, y, Fontsize, "X:", -1.0f);
 		UpdateMovementInformationTextContainer(m_aPlayerPositionContainers[0], Fontsize, Info.m_Pos.x, m_aPlayerPrevPosition[0]);
-		RenderMovementInformationTextContainer(m_aPlayerPositionContainers[0], (PosxTargetEqualPosxPlayer ? ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f) : TextRender()->DefaultTextColor()), xr, y);
+		RenderMovementInformationTextContainer(m_aPlayerPositionContainers[0], (PosxTargetEqualPosxPlayer ? ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f) : TextRender()->DefaultTextColor()), RightX, y);
 		y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 
-		TextRender()->Text(xl, y, Fontsize, "Y:", -1.0f);
+		TextRender()->Text(LeftX, y, Fontsize, "Y:", -1.0f);
 		UpdateMovementInformationTextContainer(m_aPlayerPositionContainers[1], Fontsize, Info.m_Pos.y, m_aPlayerPrevPosition[1]);
-		RenderMovementInformationTextContainer(m_aPlayerPositionContainers[1], TextRender()->DefaultTextColor(), xr, y);
+		RenderMovementInformationTextContainer(m_aPlayerPositionContainers[1], TextRender()->DefaultTextColor(), RightX, y);
 		y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 	}
 
@@ -1777,31 +1777,31 @@ void CHud::RenderMovementInformation()
 			if(g_Config.m_RiShowLastPosHudDummy)
 				m_LastposDummy = Dummyinfo.m_Pos;
 		}
-		TextRender()->Text(xl, y, Fontsize, Localize("Dummy Position:"), -1.0f);
+		TextRender()->Text(LeftX, y, Fontsize, Localize("Dummy Position:"), -1.0f);
 		y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 
-		TextRender()->Text(xl, y, Fontsize, "X:", -1.0f);
+		TextRender()->Text(LeftX, y, Fontsize, "X:", -1.0f);
 
 		if(m_DummyInfo == 0 && (m_LastposDummy == vec2(0.0f, 0.0f) || !g_Config.m_RiShowLastPosHudDummy))
 		{
-			TextRender()->Text(xr - TextRender()->TextWidth(Fontsize, "No Info", -1, -1.0f), y, Fontsize, "No Info", -1.0f);
+			TextRender()->Text(RightX - TextRender()->TextWidth(Fontsize, "No Info", -1, -1.0f), y, Fontsize, "No Info", -1.0f);
 		}
 		else
 		{
 			UpdateMovementInformationTextContainer(m_aDummyPositionContainers[0], Fontsize, Dummyinfo.m_Pos.x, m_aDummyPrevPosition[0]);
-			RenderMovementInformationTextContainer(m_aDummyPositionContainers[0], (g_Config.m_RiChangeDummyColorWhenXDummyEqualXPlayer && Dummyinfo.m_Pos.x == Info.m_Pos.x ? ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f) : TextRender()->DefaultTextColor()), xr, y);
+			RenderMovementInformationTextContainer(m_aDummyPositionContainers[0], (g_Config.m_RiChangeDummyColorWhenXDummyEqualXPlayer && Dummyinfo.m_Pos.x == Info.m_Pos.x ? ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f) : TextRender()->DefaultTextColor()), RightX, y);
 		}
 		y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 
-		TextRender()->Text(xl, y, Fontsize, "Y:", -1.0f);
+		TextRender()->Text(LeftX, y, Fontsize, "Y:", -1.0f);
 		if(m_DummyInfo == 0 && (m_LastposDummy == vec2(0.0f, 0.0f) || !g_Config.m_RiShowLastPosHudDummy))
 		{
-			TextRender()->Text(xr - TextRender()->TextWidth(Fontsize, "No Info", -1, -1.0f), y, Fontsize, "No Info", -1.0f);
+			TextRender()->Text(RightX - TextRender()->TextWidth(Fontsize, "No Info", -1, -1.0f), y, Fontsize, "No Info", -1.0f);
 		}
 		else
 		{
 			UpdateMovementInformationTextContainer(m_aDummyPositionContainers[1], Fontsize, Dummyinfo.m_Pos.y, m_aDummyPrevPosition[1]);
-			RenderMovementInformationTextContainer(m_aDummyPositionContainers[1], TextRender()->DefaultTextColor(), xr, y);
+			RenderMovementInformationTextContainer(m_aDummyPositionContainers[1], TextRender()->DefaultTextColor(), RightX, y);
 		}
 		y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 	}
@@ -1826,30 +1826,30 @@ void CHud::RenderMovementInformation()
 			char aBuf[64];
 			const char *pNickname = GameClient()->m_RClient.TargetPositionNickname[i];
 			str_format(aBuf, sizeof(aBuf), "%s Pos:", pNickname);
-			TextRender()->Text(xl, y, Fontsize, aBuf, -1.0f);
+			TextRender()->Text(LeftX, y, Fontsize, aBuf, -1.0f);
 			y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 
-			TextRender()->Text(xl, y, Fontsize, "X:", -1.0f);
+			TextRender()->Text(LeftX, y, Fontsize, "X:", -1.0f);
 			if(m_TargetInfo[i] == 0 && (m_Lastpostarget[i] == vec2(0.0f, 0.0f) || !g_Config.m_RiShowLastPosHud))
 			{
-				TextRender()->Text(xr - TextRender()->TextWidth(Fontsize, "No Info", -1, -1.0f), y, Fontsize, "No Info", -1.0f);
+				TextRender()->Text(RightX - TextRender()->TextWidth(Fontsize, "No Info", -1, -1.0f), y, Fontsize, "No Info", -1.0f);
 			}
 			else
 			{
 				UpdateMovementInformationTextContainer(m_aTargetPositionContainers[0], Fontsize, Targetinfo[i].m_Pos.x, m_aTargetPrevPosition[0]);
-				RenderMovementInformationTextContainer(m_aTargetPositionContainers[0], (g_Config.m_RiChangeTargetColorWhenXTargetEqualXPlayer && Targetinfo[i].m_Pos.x == Info.m_Pos.x ? ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f) : TextRender()->DefaultTextColor()), xr, y);
+				RenderMovementInformationTextContainer(m_aTargetPositionContainers[0], (g_Config.m_RiChangeTargetColorWhenXTargetEqualXPlayer && Targetinfo[i].m_Pos.x == Info.m_Pos.x ? ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f) : TextRender()->DefaultTextColor()), RightX, y);
 			}
 			y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 
-			TextRender()->Text(xl, y, Fontsize, "Y:", -1.0f);
+			TextRender()->Text(LeftX, y, Fontsize, "Y:", -1.0f);
 			if(m_TargetInfo[i] == 0 && (m_Lastpostarget[i] == vec2(0.0f, 0.0f) || !g_Config.m_RiShowLastPosHud))
 			{
-				TextRender()->Text(xr - TextRender()->TextWidth(Fontsize, "No Info", -1, -1.0f), y, Fontsize, "No Info", -1.0f);
+				TextRender()->Text(RightX - TextRender()->TextWidth(Fontsize, "No Info", -1, -1.0f), y, Fontsize, "No Info", -1.0f);
 			}
 			else
 			{
 				UpdateMovementInformationTextContainer(m_aTargetPositionContainers[1], Fontsize, Targetinfo[i].m_Pos.y, m_aTargetPrevPosition[1]);
-				RenderMovementInformationTextContainer(m_aTargetPositionContainers[1], TextRender()->DefaultTextColor(), xr, y);
+				RenderMovementInformationTextContainer(m_aTargetPositionContainers[1], TextRender()->DefaultTextColor(), RightX, y);
 			}
 			y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 		}
@@ -1860,7 +1860,7 @@ void CHud::RenderMovementInformation()
 
 	if(g_Config.m_ClShowhudPlayerSpeed)
 	{
-		TextRender()->Text(xl, y, Fontsize, Localize("Speed:"), -1.0f);
+		TextRender()->Text(LeftX, y, Fontsize, Localize("Speed:"), -1.0f);
 		y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 
 		const char aaCoordinates[][4] = {"X:", "Y:"};
@@ -1871,9 +1871,9 @@ void CHud::RenderMovementInformation()
 				Color = ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f);
 			if(m_aLastPlayerSpeedChange[i] == ESpeedChange::DECREASE)
 				Color = ColorRGBA(1.0f, 0.5f, 0.5f, 1.0f);
-			TextRender()->Text(xl, y, Fontsize, aaCoordinates[i], -1.0f);
+			TextRender()->Text(LeftX, y, Fontsize, aaCoordinates[i], -1.0f);
 			UpdateMovementInformationTextContainer(m_aPlayerSpeedTextContainers[i], Fontsize, i == 0 ? Info.m_Speed.x : Info.m_Speed.y, m_aPlayerPrevSpeed[i]);
-			RenderMovementInformationTextContainer(m_aPlayerSpeedTextContainers[i], Color, xr, y);
+			RenderMovementInformationTextContainer(m_aPlayerSpeedTextContainers[i], Color, RightX, y);
 			y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 		}
 
@@ -1882,11 +1882,11 @@ void CHud::RenderMovementInformation()
 
 	if(g_Config.m_ClShowhudPlayerAngle)
 	{
-		TextRender()->Text(xl, y, Fontsize, Localize("Angle:"), -1.0f);
+		TextRender()->Text(LeftX, y, Fontsize, Localize("Angle:"), -1.0f);
 		y += MOVEMENT_INFORMATION_LINE_HEIGHT;
 
 		UpdateMovementInformationTextContainer(m_PlayerAngleTextContainerIndex, Fontsize, Info.m_Angle, m_PlayerPrevAngle);
-		RenderMovementInformationTextContainer(m_PlayerAngleTextContainerIndex, TextRender()->DefaultTextColor(), xr, y);
+		RenderMovementInformationTextContainer(m_PlayerAngleTextContainerIndex, TextRender()->DefaultTextColor(), RightX, y);
 	}
 }
 

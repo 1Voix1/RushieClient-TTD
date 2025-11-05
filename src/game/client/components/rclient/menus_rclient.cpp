@@ -49,10 +49,8 @@ const float EditBoxFontSize = 12.0f;
 const float LineSize = 20.0f;
 const float ColorPickerLineSize = 25.0f;
 const float HeadlineFontSize = 20.0f;
-const float StandardFontSize = 14.0f;
 
 const float HeadlineHeight = HeadlineFontSize + 0.0f;
-const float Margin = 10.0f;
 const float MarginSmall = 5.0f;
 const float MarginExtraSmall = 2.5f;
 const float MarginBetweenSections = 30.0f;
@@ -326,7 +324,7 @@ void CMenus::RenderSettingsRushie(CUIRect MainView)
 
 		Ui()->DoLabel(&KeyLabel, aBuf, FontSize, TEXTALIGN_ML);
 		int OldId = Key.m_KeyId, OldModifierCombination = Key.m_ModifierCombination, NewModifierCombination;
-		int NewId = DoKeyReader((void *)&Key.m_pName, &Button, OldId, OldModifierCombination, &NewModifierCombination);
+		int NewId = GameClient()->m_KeyBinder.DoKeyReader((void *)&Key.m_pName, &Button, OldId, OldModifierCombination, &NewModifierCombination);
 		if(NewId != OldId || NewModifierCombination != OldModifierCombination)
 		{
 			if(OldId != 0 || NewId == 0)
@@ -527,7 +525,7 @@ void CMenus::RenderSettingsRushieSettings(CUIRect MainView)
 
 			Ui()->DoLabel(&Label, aBuf, 13.0f, TEXTALIGN_ML);
 			int OldId = Key.m_KeyId, OldModifierCombination = Key.m_ModifierCombination, NewModifierCombination;
-			int NewId = DoKeyReader(&Key.m_KeyId, &Button, OldId, OldModifierCombination, &NewModifierCombination);
+			int NewId = GameClient()->m_KeyBinder.DoKeyReader((void *)&Key.m_pName, &Button, OldId, OldModifierCombination, &NewModifierCombination);
 			if(NewId != OldId || NewModifierCombination != OldModifierCombination)
 			{
 				if(OldId != 0 || NewId == 0)
@@ -1003,6 +1001,12 @@ void CMenus::RenderSettingsRushieSettings(CUIRect MainView)
 	DoOutlineType(s_aOutlineButtonContainers[0], TCLocalize("Color when over freeze"), g_Config.m_RiEdgeInfoColorFreeze, color_cast<ColorRGBA>(ColorHSLA(CConfig::ms_RiEdgeInfoColorFreeze)));
 	DoOutlineType(s_aOutlineButtonContainers[1], TCLocalize("Color when over kill"), g_Config.m_RiEdgeInfoColorKill, color_cast<ColorRGBA>(ColorHSLA(CConfig::ms_RiEdgeInfoColorKill)));
 	DoOutlineType(s_aOutlineButtonContainers[2], TCLocalize("Color when falling safely"), g_Config.m_RiEdgeInfoColorSafe, color_cast<ColorRGBA>(ColorHSLA(CConfig::ms_RiEdgeInfoColorSafe)));
+	Column.HSplitTop(LineSize, &Button, &Column);
+	Ui()->DoScrollbarOption(&g_Config.m_RiEdgeInfoPosX, &g_Config.m_RiEdgeInfoPosX, &Button, RCLocalize("Edge info pos x"), 0, 100);
+	Column.HSplitTop(MarginSmall, &Button, &Column);
+	Column.HSplitTop(LineSize, &Button, &Column);
+	Ui()->DoScrollbarOption(&g_Config.m_RiEdgeInfoPosY, &g_Config.m_RiEdgeInfoPosY, &Button, RCLocalize("Edge info pos y"), 0, 100);
+	Column.HSplitTop(MarginSmall, &Button, &Column);
 
 
 	RightView = Column;
@@ -1330,7 +1334,7 @@ void CMenus::RenderSettingsRushieRCON(CUIRect MainView)
 
 			Ui()->DoLabel(&Label, aBuf, 13.0f, TEXTALIGN_ML);
 			int OldId = Key.m_KeyId, OldModifierCombination = Key.m_ModifierCombination, NewModifierCombination;
-			int NewId = DoKeyReader(&Key.m_KeyId, &Button, OldId, OldModifierCombination, &NewModifierCombination);
+			int NewId = GameClient()->m_KeyBinder.DoKeyReader((void *)&Key.m_pName, &Button, OldId, OldModifierCombination, &NewModifierCombination);
 			if(NewId != OldId || NewModifierCombination != OldModifierCombination)
 			{
 				if(OldId != 0 || NewId == 0)

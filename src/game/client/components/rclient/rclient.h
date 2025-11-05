@@ -39,7 +39,6 @@ class CRClient : public CComponent
 	int m_Smallsenstogglelastinput = 0;
 	int m_SmallsensEnabled = 0;
 	//Deepfly
-	int m_DeepflyEnabled = 0;
 	char m_Oldmouse1Bind[128];
 
 	// GetInfofromDDstats
@@ -68,11 +67,8 @@ public:
 	void OnRender() override;
 
 	static constexpr const char *RCLIENT_URL = "https://rushie-client.ru";
-	static constexpr const char *RCLIENT_URL_USERS = "https://server.rushie-client.ru/users.json";
 	static constexpr const char *RCLIENT_VERSION_URL = "https://server.rushie-client.ru/version";
-	static constexpr const char *RCLIENT_TOKEN_URL = "https://server.rushie-client.ru/token";
 	char m_aVersionStr[10] = "0";
-	char m_aAuthToken[128] = {0};
 
 	std::shared_ptr<CHttpRequest> m_pRClientVersionCheck = nullptr;
 	void FetchRclientVersionCheck();
@@ -80,11 +76,6 @@ public:
 	void ResetRclientVersionCheck();
 	int RclientVersionCheckDone = 0;
 	bool NeedUpdate();
-
-	std::shared_ptr<CHttpRequest> m_pAuthTokenTask = nullptr;
-	void FetchAuthToken();
-	void FinishAuthToken();
-	void ResetAuthToken();
 
 	// Find map rank
 	std::shared_ptr<CHttpRequest> m_pSearchRankOnMapTask = nullptr;
@@ -136,25 +127,6 @@ public:
 	std::vector<std::string> m_RegexSplited;
 	std::vector<std::string> m_RegexSplitedPlayer;
 	void RiSplitRegex() const;
-
-	// Server and Player Info Collection
-	std::shared_ptr<CHttpRequest> m_pRClientUsersTaskSend = nullptr;
-	void SendServerPlayerInfo();
-	void SendPlayerData(const char *pServerAddress, int ClientId, int DummyClientId = -1);
-	void FetchRClientUsers();
-	void FinishRClientUsers();
-	void ResetRClientUsers();
-	// void FinishRClientUsersSend();
-	void ResetRClientUsersSend();
-	bool IsPlayerRClient(int ClientId);
-	char m_aCurrentServerAddress[256];
-	std::shared_ptr<CHttpRequest> m_pRClientUsersTask = nullptr;
-	std::vector<std::pair<std::string, int>> m_vRClientUsers; // server address, player id
-	void SendDummyRclientUsers();
-	int64_t s_LastFetch = 0;
-	bool s_InitialFetchDone = false;
-	bool s_InitialFetchDoneDummy = false;
-	int s_RclientIndicatorCount = 0;
 
 	std::vector<std::string> GetWordsListRegex(int IsPlayer) const;
 };

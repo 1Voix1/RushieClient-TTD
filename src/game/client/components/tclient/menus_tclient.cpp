@@ -884,7 +884,7 @@ void CMenus::RenderSettingsTClientSettngs(CUIRect MainView)
 		str_format(aBuf, sizeof(aBuf), "%s:", TCLocalize(s_Key.m_pName));
 		Ui()->DoLabel(&KeyLabel, aBuf, 12.0f, TEXTALIGN_ML);
 		int OldId = s_Key.m_KeyId, OldModifierCombination = s_Key.m_ModifierCombination, NewModifierCombination;
-		int NewId = DoKeyReader(&s_Key, &KeyButton, OldId, OldModifierCombination, &NewModifierCombination);
+		int NewId = GameClient()->m_KeyBinder.DoKeyReader(&s_Key, &KeyButton, OldId, OldModifierCombination, &NewModifierCombination);
 		if(NewId != OldId || NewModifierCombination != OldModifierCombination)
 		{
 			if(OldId != 0 || NewId == 0)
@@ -942,15 +942,15 @@ void CMenus::RenderSettingsTClientSettngs(CUIRect MainView)
 	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_TcTeeTrailTaper, TCLocalize("Taper trail width"), &g_Config.m_TcTeeTrailTaper, &Column, LineSize);
 
 	Column.HSplitTop(MarginExtraSmall, nullptr, &Column);
-	std::vector<const char *> s_TrailDropDownNames;
-	s_TrailDropDownNames = {TCLocalize("Solid"), TCLocalize("Tee"), TCLocalize("Rainbow"), TCLocalize("Speed")};
+	std::vector<const char *> vTrailDropDownNames;
+	vTrailDropDownNames = {TCLocalize("Solid"), TCLocalize("Tee"), TCLocalize("Rainbow"), TCLocalize("Speed")};
 	static CUi::SDropDownState s_TrailDropDownState;
 	static CScrollRegion s_TrailDropDownScrollRegion;
 	s_TrailDropDownState.m_SelectionPopupContext.m_pScrollRegion = &s_TrailDropDownScrollRegion;
 	int TrailSelectedOld = g_Config.m_TcTeeTrailColorMode - 1;
 	CUIRect TrailDropDownRect;
 	Column.HSplitTop(LineSize, &TrailDropDownRect, &Column);
-	const int TrailSelectedNew = Ui()->DoDropDown(&TrailDropDownRect, TrailSelectedOld, s_TrailDropDownNames.data(), s_TrailDropDownNames.size(), s_TrailDropDownState);
+	const int TrailSelectedNew = Ui()->DoDropDown(&TrailDropDownRect, TrailSelectedOld, vTrailDropDownNames.data(), vTrailDropDownNames.size(), s_TrailDropDownState);
 	if(TrailSelectedOld != TrailSelectedNew)
 	{
 		g_Config.m_TcTeeTrailColorMode = TrailSelectedNew + 1;
@@ -1020,7 +1020,7 @@ void CMenus::RenderSettingsTClientSettngs(CUIRect MainView)
 		str_format(aBuf, sizeof(aBuf), "%s:", TCLocalize(s_Key.m_pName));
 		Ui()->DoLabel(&KeyLabel, aBuf, 12.0f, TEXTALIGN_ML);
 		int OldId = s_Key.m_KeyId, OldModifierCombination = s_Key.m_ModifierCombination, NewModifierCombination;
-		int NewId = DoKeyReader(&s_Key, &KeyButton, OldId, OldModifierCombination, &NewModifierCombination);
+		int NewId = GameClient()->m_KeyBinder.DoKeyReader(&s_Key, &KeyButton, OldId, OldModifierCombination, &NewModifierCombination);
 		if(NewId != OldId || NewModifierCombination != OldModifierCombination)
 		{
 			if(OldId != 0 || NewId == 0)
@@ -1234,7 +1234,7 @@ void CMenus::RenderSettingsTClientBindWheel(CUIRect MainView)
 
 	Ui()->DoLabel(&KeyLabel, aBuf, FontSize, TEXTALIGN_ML);
 	int OldId = Key.m_KeyId, OldModifierCombination = Key.m_ModifierCombination, NewModifierCombination;
-	int NewId = DoKeyReader((void *)&Key.m_pName, &Button, OldId, OldModifierCombination, &NewModifierCombination);
+	int NewId = GameClient()->m_KeyBinder.DoKeyReader((void *)&Key.m_pName, &Button, OldId, OldModifierCombination, &NewModifierCombination);
 	if(NewId != OldId || NewModifierCombination != OldModifierCombination)
 	{
 		if(OldId != 0 || NewId == 0)
@@ -2111,10 +2111,10 @@ void CMenus::RenderSettingsTClientInfo(CUIRect MainView)
 	{
 		RightView.HSplitTop(CardSize, &DevCardRect, &RightView);
 		DevCardRect.VSplitLeft(CardSize, &TeeRect, &Label);
-		Label.VSplitLeft(TextRender()->TextWidth(LineSize, "Solly"), &Label, &Button);
+		Label.VSplitLeft(TextRender()->TextWidth(LineSize, "SollyBunny / bun bun"), &Label, &Button);
 		Button.VSplitLeft(MarginSmall, nullptr, &Button);
 		Button.w = LineSize, Button.h = LineSize, Button.y = Label.y + (Label.h / 2.0f - Button.h / 2.0f);
-		Ui()->DoLabel(&Label, "Solly", LineSize, TEXTALIGN_ML);
+		Ui()->DoLabel(&Label, "SollyBunny / bun bun", LineSize, TEXTALIGN_ML);
 		if(Ui()->DoButton_FontIcon(&s_LinkButton3, FONT_ICON_ARROW_UP_RIGHT_FROM_SQUARE, 0, &Button, IGraphics::CORNER_ALL))
 			Client()->ViewLink("https://github.com/SollyBunny");
 		RenderDevSkin(TeeRect.Center(), 50.0f, "tuzi", "tuzi", false, 0, 0, 2, true);
@@ -2176,10 +2176,10 @@ void CMenus::RenderSettingsTClientInfo(CUIRect MainView)
 		SetFlag(g_Config.m_TcTClientSettingsTabs, i, s_aShowTabs[i]);
 	}
 
-	RightView.HSplitTop(HeadlineHeight, &Label, &RightView);
-	Ui()->DoLabel(&Label, TCLocalize("Integration"), HeadlineFontSize, TEXTALIGN_ML);
-	RightView.HSplitTop(MarginSmall, nullptr, &RightView);
-	DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_TcDiscordRPC, TCLocalize("Enable Discord Integration"), &g_Config.m_TcDiscordRPC, &RightView, LineSize);
+	// RightView.HSplitTop(HeadlineHeight, &Label, &RightView);
+	// Ui()->DoLabel(&Label, TCLocalize("Integration"), HeadlineFontSize, TEXTALIGN_ML);
+	// RightView.HSplitTop(MarginSmall, nullptr, &RightView);
+	// DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_TcDiscordRPC, TCLocalize("Enable Discord Integration"), &g_Config.m_TcDiscordRPC, &RightView, LineSize);
 }
 
 void CMenus::RenderSettingsTClientProfiles(CUIRect MainView)
