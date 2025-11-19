@@ -1,4 +1,5 @@
-# Rushie Client
+# Now it closed project
+# Rushie Client For TravelToDDNet
 
 **Rclient** is my personal, slightly chaotic, fork of **[TaterClient](https://github.com/sjrc6/TaterClient-ddnet)**
 
